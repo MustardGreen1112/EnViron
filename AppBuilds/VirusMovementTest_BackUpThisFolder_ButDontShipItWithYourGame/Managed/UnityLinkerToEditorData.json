@@ -1002,7 +1002,9 @@
         "dependencies": [
           {
             "name": "BoxCollider",
-            "scenes": [],
+            "scenes": [
+              "Assets/Scenes/modelVirusMovementTest.unity"
+            ],
             "dependencyType": 0,
             "icon": null
           },
@@ -1021,7 +1023,7 @@
           {
             "name": "Collider",
             "scenes": [],
-            "dependencyType": 0,
+            "dependencyType": 1,
             "icon": null
           },
           {
@@ -1062,7 +1064,9 @@
           },
           {
             "name": "Rigidbody",
-            "scenes": [],
+            "scenes": [
+              "Assets/Scenes/modelVirusMovementTest.unity"
+            ],
             "dependencyType": 0,
             "icon": null
           },
