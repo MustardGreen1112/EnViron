@@ -5218,7 +5218,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectionSurfaceType: 0
-  overlayType: 1
+  overlayType: 0
   compositionDepth: 0
   hidden: 0
   overridePerLayerColorScaleAndOffset: 0
