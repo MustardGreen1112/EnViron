@@ -15,8 +15,6 @@ public class MovementController : MonoBehaviour
 
     void FixedUpdate()
     {
-        this.transform.rotation = modelVirus.transform.rotation;
-
         Vector3 displacement = modelVirus.GetComponent<Transform>().localPosition - startingPosition;
 
         // Move this object according to the displacement of the model virus
