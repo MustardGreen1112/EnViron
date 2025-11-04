@@ -8,8 +8,16 @@
 
 
 extern void MovementController_Start_mC610545030D9B7CBC2A3F61C8931CF147AAE09E9 (void);
+extern void MovementController_Update_mB72AA3FFD41BE01F39C18D80DA2C7D5D8D69F3E0 (void);
 extern void MovementController_FixedUpdate_mBEE60D25391050EFB893DC1D32B30F2055684253 (void);
+extern void MovementController_DriftBack_m2102293DB83783FA457C9D99FA009EDBB6812224 (void);
 extern void MovementController__ctor_mBA50A088FED8B4A0F7727D69277B39BB0D385C26 (void);
+extern void U3CDriftBackU3Ed__13__ctor_m87B8E4E7C20251215751BF8FC43E06CA9BE104A4 (void);
+extern void U3CDriftBackU3Ed__13_System_IDisposable_Dispose_m52A90E3A4F5E7393A15A3FF2219B7CB108239E06 (void);
+extern void U3CDriftBackU3Ed__13_MoveNext_mAB0F6FBC3C18C5148FCB178C11D11DED6D59FDDA (void);
+extern void U3CDriftBackU3Ed__13_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m7089E6778FCEC531625A4D108617E20A387097F5 (void);
+extern void U3CDriftBackU3Ed__13_System_Collections_IEnumerator_Reset_m97850BFD20E1195929836DD3DE98B52F65786FEB (void);
+extern void U3CDriftBackU3Ed__13_System_Collections_IEnumerator_get_Current_m3D222EA849C4C47B10826288B2EBF13AB3F7247B (void);
 extern void testScript_Start_mD90A839613AA864D376446F34354A24FE6B92F8A (void);
 extern void testScript_Update_m529679565B3204583D595ECE20BCE4B15062D8D6 (void);
 extern void testScript__ctor_m49A3BB6D3E3C5F27C5CF1BA40D416DA83AF04973 (void);
@@ -92,11 +100,19 @@ extern void ThirdPersonController_OnDrawGizmosSelected_mCD3D7F711815BC95C166CB8E
 extern void ThirdPersonController_OnFootstep_mFE54F581AB0F72FC34208BCB6ABF77311BCC3D02 (void);
 extern void ThirdPersonController_OnLand_mAF1A04288C4B0ED39ACA52599F18D059F78D41C8 (void);
 extern void ThirdPersonController__ctor_mA2ECE265C51A281DA13F2344E30363399DD64321 (void);
-static Il2CppMethodPointer s_methodPointers[85] = 
+static Il2CppMethodPointer s_methodPointers[93] = 
 {
 	MovementController_Start_mC610545030D9B7CBC2A3F61C8931CF147AAE09E9,
+	MovementController_Update_mB72AA3FFD41BE01F39C18D80DA2C7D5D8D69F3E0,
 	MovementController_FixedUpdate_mBEE60D25391050EFB893DC1D32B30F2055684253,
+	MovementController_DriftBack_m2102293DB83783FA457C9D99FA009EDBB6812224,
 	MovementController__ctor_mBA50A088FED8B4A0F7727D69277B39BB0D385C26,
+	U3CDriftBackU3Ed__13__ctor_m87B8E4E7C20251215751BF8FC43E06CA9BE104A4,
+	U3CDriftBackU3Ed__13_System_IDisposable_Dispose_m52A90E3A4F5E7393A15A3FF2219B7CB108239E06,
+	U3CDriftBackU3Ed__13_MoveNext_mAB0F6FBC3C18C5148FCB178C11D11DED6D59FDDA,
+	U3CDriftBackU3Ed__13_System_Collections_Generic_IEnumeratorU3CSystem_ObjectU3E_get_Current_m7089E6778FCEC531625A4D108617E20A387097F5,
+	U3CDriftBackU3Ed__13_System_Collections_IEnumerator_Reset_m97850BFD20E1195929836DD3DE98B52F65786FEB,
+	U3CDriftBackU3Ed__13_System_Collections_IEnumerator_get_Current_m3D222EA849C4C47B10826288B2EBF13AB3F7247B,
 	testScript_Start_mD90A839613AA864D376446F34354A24FE6B92F8A,
 	testScript_Update_m529679565B3204583D595ECE20BCE4B15062D8D6,
 	testScript__ctor_m49A3BB6D3E3C5F27C5CF1BA40D416DA83AF04973,
@@ -180,11 +196,19 @@ static Il2CppMethodPointer s_methodPointers[85] =
 	ThirdPersonController_OnLand_mAF1A04288C4B0ED39ACA52599F18D059F78D41C8,
 	ThirdPersonController__ctor_mA2ECE265C51A281DA13F2344E30363399DD64321,
 };
-static const int32_t s_InvokerIndices[85] = 
+static const int32_t s_InvokerIndices[93] = 
 {
 	19423,
 	19423,
 	19423,
+	19201,
+	19423,
+	14801,
+	19423,
+	18966,
+	19201,
+	19423,
+	19201,
 	19423,
 	19423,
 	19423,
@@ -272,7 +296,7 @@ IL2CPP_EXTERN_C const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule;
 const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule = 
 {
 	"Assembly-CSharp.dll",
-	85,
+	93,
 	s_methodPointers,
 	0,
 	NULL,

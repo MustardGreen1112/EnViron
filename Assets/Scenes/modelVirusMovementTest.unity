@@ -382,6 +382,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MovementController
   modelVirus: {fileID: 803503899}
   movementScalar: 5
+  driftDuration: 3
+  controller: -1
+  bumperButton: 134217728
 --- !u!54 &76716725
 Rigidbody:
   m_ObjectHideFlags: 0
