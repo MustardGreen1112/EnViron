@@ -4,6 +4,7 @@ using UnityEngine;
 public class MovementController : MonoBehaviour
 {
     [SerializeField] private GameObject modelVirus;
+    [SerializeField] private float movementScalar;
     private Vector3 startingPosition;
     private Rigidbody rigid;
 
@@ -18,6 +19,6 @@ public class MovementController : MonoBehaviour
         Vector3 displacement = modelVirus.GetComponent<Transform>().localPosition - startingPosition;
 
         // Move this object according to the displacement of the model virus
-        rigid.AddForce(displacement, ForceMode.Acceleration);
+        rigid.AddForce(displacement*movementScalar, ForceMode.Acceleration);
     }
 }
