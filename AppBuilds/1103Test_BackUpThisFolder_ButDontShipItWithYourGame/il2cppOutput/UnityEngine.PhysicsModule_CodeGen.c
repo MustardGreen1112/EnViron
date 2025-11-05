@@ -411,6 +411,7 @@ extern void Rigidbody_get_linearVelocity_m367F5415641E5FB968440A91BAE2FCB8CAEA2C
 extern void Rigidbody_set_linearVelocity_m29AE03D5FC079EAD4202FCF72E2AEBDC19363985 (void);
 extern void Rigidbody_get_angularVelocity_m4EACCFCF15CA441CCD53B24322C2E7B8EEBDF6A8 (void);
 extern void Rigidbody_set_angularVelocity_m23266B4E52BF0D2E65CC984AC73CC40B8D4A27E0 (void);
+extern void Rigidbody_set_linearDamping_m42BB8ADA5D26250A11256502D08BDC2DAB980242 (void);
 extern void Rigidbody_get_mass_m09DDDDC437499B83B3BD0D77C134BFDC3E667054 (void);
 extern void Rigidbody_set_mass_mC7F886DEDB57C742A16F8B6B779F69AFE164CA4B (void);
 extern void Rigidbody_set_useGravity_m1B1B22E093F9DC92D7BEEBBE6B02642B3B6C4389 (void);
@@ -437,6 +438,7 @@ extern void Rigidbody_get_linearVelocity_Injected_m0230F76BD25355A9762C9C5E32C60
 extern void Rigidbody_set_linearVelocity_Injected_mCAC97A87C8F0FAFA7007C394AF7974DD37073467 (void);
 extern void Rigidbody_get_angularVelocity_Injected_m8F8207351352DBE8B7103C3A703E03A25C3046CB (void);
 extern void Rigidbody_set_angularVelocity_Injected_m214B4B9E3C8DCA28990EE9D4BD3402474C32E939 (void);
+extern void Rigidbody_set_linearDamping_Injected_mE9170235C451E464E568531097B082444080A306 (void);
 extern void Rigidbody_get_mass_Injected_m8664DF1CE25F4732818AEAE600C5451ECABB41BB (void);
 extern void Rigidbody_set_mass_Injected_m19C3B6F0F2C8AE43E22EAD4A4A28315DB2C63880 (void);
 extern void Rigidbody_set_useGravity_Injected_mE1C763DD42795192ABDEF9C9CD758ACA6B91EBBC (void);
@@ -460,7 +462,7 @@ extern void SphereCollider_set_radius_m6119FE18C6739B077AB17334B1B53984911017FF 
 extern void SphereCollider__ctor_mA8570CBE8C0E74C607669DC4E0CCA6CB1E4CB200 (void);
 extern void SphereCollider_get_radius_Injected_mF96901A391F7DBD16C5895D85C4853B65CD033A0 (void);
 extern void SphereCollider_set_radius_Injected_m1A4885A34095D7CE22CE2001BA6D47022F387747 (void);
-static Il2CppMethodPointer s_methodPointers[453] = 
+static Il2CppMethodPointer s_methodPointers[455] = 
 {
 	Collision_get_relativeVelocity_mAD9D45864C56FFAB284E77835BF75DF86D4E4CC0,
 	Collision_get_collider_mBB5A086C78FE4BE0589E216F899B611673ADD25D,
@@ -866,6 +868,7 @@ static Il2CppMethodPointer s_methodPointers[453] =
 	Rigidbody_set_linearVelocity_m29AE03D5FC079EAD4202FCF72E2AEBDC19363985,
 	Rigidbody_get_angularVelocity_m4EACCFCF15CA441CCD53B24322C2E7B8EEBDF6A8,
 	Rigidbody_set_angularVelocity_m23266B4E52BF0D2E65CC984AC73CC40B8D4A27E0,
+	Rigidbody_set_linearDamping_m42BB8ADA5D26250A11256502D08BDC2DAB980242,
 	Rigidbody_get_mass_m09DDDDC437499B83B3BD0D77C134BFDC3E667054,
 	Rigidbody_set_mass_mC7F886DEDB57C742A16F8B6B779F69AFE164CA4B,
 	Rigidbody_set_useGravity_m1B1B22E093F9DC92D7BEEBBE6B02642B3B6C4389,
@@ -892,6 +895,7 @@ static Il2CppMethodPointer s_methodPointers[453] =
 	Rigidbody_set_linearVelocity_Injected_mCAC97A87C8F0FAFA7007C394AF7974DD37073467,
 	Rigidbody_get_angularVelocity_Injected_m8F8207351352DBE8B7103C3A703E03A25C3046CB,
 	Rigidbody_set_angularVelocity_Injected_m214B4B9E3C8DCA28990EE9D4BD3402474C32E939,
+	Rigidbody_set_linearDamping_Injected_mE9170235C451E464E568531097B082444080A306,
 	Rigidbody_get_mass_Injected_m8664DF1CE25F4732818AEAE600C5451ECABB41BB,
 	Rigidbody_set_mass_Injected_m19C3B6F0F2C8AE43E22EAD4A4A28315DB2C63880,
 	Rigidbody_set_useGravity_Injected_mE1C763DD42795192ABDEF9C9CD758ACA6B91EBBC,
@@ -997,7 +1001,7 @@ static Il2CppTokenAdjustorThunkPair s_adjustorThunks[39] =
 	{ 0x0600018F, RaycastHit_get_transform_m89DB7FCFC50E0213A37CBE089400064B8FA19155_AdjustorThunk },
 	{ 0x06000190, RaycastHit_get_rigidbody_mE6FCB1B1A9F0C8D4185A484C10B9A5403CCD6005_AdjustorThunk },
 };
-static const int32_t s_InvokerIndices[453] = 
+static const int32_t s_InvokerIndices[455] = 
 {
 	19412,
 	19201,
@@ -1403,6 +1407,7 @@ static const int32_t s_InvokerIndices[453] =
 	15096,
 	19412,
 	15096,
+	14987,
 	19303,
 	14987,
 	14657,
@@ -1429,6 +1434,7 @@ static const int32_t s_InvokerIndices[453] =
 	26903,
 	26903,
 	26903,
+	26910,
 	29897,
 	26910,
 	26904,
@@ -1457,7 +1463,7 @@ IL2CPP_EXTERN_C const Il2CppCodeGenModule g_UnityEngine_PhysicsModule_CodeGenMod
 const Il2CppCodeGenModule g_UnityEngine_PhysicsModule_CodeGenModule = 
 {
 	"UnityEngine.PhysicsModule.dll",
-	453,
+	455,
 	s_methodPointers,
 	39,
 	s_adjustorThunks,

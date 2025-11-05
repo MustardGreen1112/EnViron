@@ -3978,6 +3978,7 @@ struct MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA  : public Mo
 {
 	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___modelVirus;
 	float ___movementScalar;
+	float ___decelerationPenalty;
 	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___startingPosition;
 	Rigidbody_t268697F5A994213ED97393309870968BC1C7393C* ___rigid;
 	bool ___isHolding;
@@ -3985,7 +3986,6 @@ struct MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA  : public Mo
 	AnimationCurve_tCBFFAAD05CEBB35EF8D8631BD99914BE1A6BB354* ___animationCurve;
 	int32_t ___controller;
 	int32_t ___bumperButton;
-	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___test;
 };
 struct NavMeshLink_t0D6058246FEA52B16CBCCC7A3730E3F818C85269  : public MonoBehaviour_t532A11E69716D348D8AA7F854AFCBFCB8AD17F71
 {
@@ -4926,7 +4926,7 @@ IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable15192[5] =
 	static_cast<int32_t>(offsetof(U3CDriftBackU3Ed__13_t8AD10D7A00FB417EFA1F3D643043CD6BA1D601F1, ___U3CU3E1__state)),static_cast<int32_t>(offsetof(U3CDriftBackU3Ed__13_t8AD10D7A00FB417EFA1F3D643043CD6BA1D601F1, ___U3CU3E2__current)),static_cast<int32_t>(offsetof(U3CDriftBackU3Ed__13_t8AD10D7A00FB417EFA1F3D643043CD6BA1D601F1, ___U3CU3E4__this)),static_cast<int32_t>(offsetof(U3CDriftBackU3Ed__13_t8AD10D7A00FB417EFA1F3D643043CD6BA1D601F1, ___U3CtimerU3E5__2)),static_cast<int32_t>(offsetof(U3CDriftBackU3Ed__13_t8AD10D7A00FB417EFA1F3D643043CD6BA1D601F1, ___U3CvectorDroppedAtPositionU3E5__3)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable15193[10] = 
 {
-	static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___modelVirus)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___movementScalar)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___startingPosition)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___rigid)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___isHolding)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___driftDuration)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___animationCurve)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___controller)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___bumperButton)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___test)),};
+	static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___modelVirus)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___movementScalar)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___decelerationPenalty)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___startingPosition)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___rigid)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___isHolding)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___driftDuration)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___animationCurve)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___controller)),static_cast<int32_t>(offsetof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA, ___bumperButton)),};
 IL2CPP_EXTERN_C const int32_t g_FieldOffsetTable15195[1] = 
 {
 	static_cast<int32_t>(offsetof(VirusRotationLock_t1AEFBAC44A5DD774AF56D48074EE304C814C4610, ___rotation)),};

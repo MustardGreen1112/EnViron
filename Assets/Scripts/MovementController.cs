@@ -5,7 +5,8 @@ using UnityEngine;
 public class MovementController : MonoBehaviour
 {
     [SerializeField] private GameObject modelVirus;
-    [SerializeField] private float movementScalar;
+    [SerializeField] private float movementScalar = 10f;
+    [SerializeField] private float decelerationPenalty = 0.7f;
     private Vector3 startingPosition;
     private Rigidbody rigid;
     private bool isHolding;
@@ -31,12 +32,14 @@ public class MovementController : MonoBehaviour
         if (OVRInput.GetDown(bumperButton))
         {
             isHolding = true;
+            rigid.linearDamping = 0;
             StopAllCoroutines();
         }
 
         if (OVRInput.GetUp(bumperButton))
         {
             isHolding = false;
+            rigid.linearDamping = decelerationPenalty;
             StartCoroutine(DriftBack());
         }
     }

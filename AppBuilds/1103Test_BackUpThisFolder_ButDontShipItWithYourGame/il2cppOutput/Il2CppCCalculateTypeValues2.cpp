@@ -46472,6 +46472,7 @@ struct MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA  : public Mo
 {
 	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___modelVirus;
 	float ___movementScalar;
+	float ___decelerationPenalty;
 	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___startingPosition;
 	Rigidbody_t268697F5A994213ED97393309870968BC1C7393C* ___rigid;
 	bool ___isHolding;
@@ -46479,7 +46480,6 @@ struct MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA  : public Mo
 	AnimationCurve_tCBFFAAD05CEBB35EF8D8631BD99914BE1A6BB354* ___animationCurve;
 	int32_t ___controller;
 	int32_t ___bumperButton;
-	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___test;
 };
 struct NativeStreamDisposeJob_tF5229172BA7C2ACF21392FB6493F9D47BA16D001 
 {
