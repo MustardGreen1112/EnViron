@@ -31007,7 +31007,7 @@ struct ModuloUInt32_t06BEE52045C79A380C18CD77A6FA7F6C12EC696B  : public ModuloIn
 struct ModuloUInt64_tB6F22A9B52AC477AFA59132DF510559BB6577676  : public ModuloInstruction_tEE88624EA81426022512265324CBD7C2673FF270
 {
 };
-struct U3CDriftBackU3Ed__13_t8AD10D7A00FB417EFA1F3D643043CD6BA1D601F1  : public RuntimeObject
+struct U3CDriftBackU3Ed__18_t2D884D93D7F8ABCF5561C2D40F2091FB5DBBD006  : public RuntimeObject
 {
 	int32_t ___U3CU3E1__state;
 	RuntimeObject* ___U3CU3E2__current;
@@ -46472,10 +46472,13 @@ struct MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA  : public Mo
 {
 	GameObject_t76FEDD663AB33C991A9C9A23129337651094216F* ___modelVirus;
 	float ___movementScalar;
-	float ___decelerationPenalty;
+	float ___releasePenalty;
 	Vector3_t24C512C7B96BBABAD472002D0BA2BDA40A5A80B2 ___startingPosition;
 	Rigidbody_t268697F5A994213ED97393309870968BC1C7393C* ___rigid;
 	bool ___isHolding;
+	bool ___isNearWall;
+	int32_t ___wallsEntered;
+	Animator_t8A52E42AE54F76681838FE9E632683EF3952E883* ___linDampAnimator;
 	float ___driftDuration;
 	AnimationCurve_tCBFFAAD05CEBB35EF8D8631BD99914BE1A6BB354* ___animationCurve;
 	int32_t ___controller;
@@ -62678,7 +62681,7 @@ const Il2CppTypeDefinitionSizes g_typeDefinitionSize15190 = { sizeof(InputUnsafe
 IL2CPP_EXTERN_C_CONST Il2CppTypeDefinitionSizes g_typeDefinitionSize15191;
 const Il2CppTypeDefinitionSizes g_typeDefinitionSize15191 = { sizeof(U3CModuleU3E_tBB65183F1134474D09FF49B95625D25472B9BA8B), -1, 0, 0 };
 IL2CPP_EXTERN_C_CONST Il2CppTypeDefinitionSizes g_typeDefinitionSize15192;
-const Il2CppTypeDefinitionSizes g_typeDefinitionSize15192 = { sizeof(U3CDriftBackU3Ed__13_t8AD10D7A00FB417EFA1F3D643043CD6BA1D601F1), -1, 0, 0 };
+const Il2CppTypeDefinitionSizes g_typeDefinitionSize15192 = { sizeof(U3CDriftBackU3Ed__18_t2D884D93D7F8ABCF5561C2D40F2091FB5DBBD006), -1, 0, 0 };
 IL2CPP_EXTERN_C_CONST Il2CppTypeDefinitionSizes g_typeDefinitionSize15193;
 const Il2CppTypeDefinitionSizes g_typeDefinitionSize15193 = { sizeof(MovementController_tDDBAF8E7FF0430A70CE760864021F91DEF60EEEA), -1, 0, 0 };
 IL2CPP_EXTERN_C_CONST Il2CppTypeDefinitionSizes g_typeDefinitionSize15194;
