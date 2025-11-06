@@ -386,7 +386,7 @@ MonoBehaviour:
   isNearWall: 0
   wallsEntered: 0
   linDampAnimator: {fileID: 919132149097932770}
-  driftDuration: 2.5
+  driftDuration: 1
   controller: -1
   bumperButton: 671088640
 --- !u!54 &76716725
