@@ -6,7 +6,7 @@ public class MovementController : MonoBehaviour
 {
     [SerializeField] private GameObject modelVirus;
 
-    // Constants
+    // Movement scalars
     [SerializeField] private float movementScalar = 7f;       // determines what the force on the virus will
                                                               // be relative to the displacement of the model
     [SerializeField] private float releasePenalty = 0.7f;     // linear damping applied when object is released
@@ -16,9 +16,9 @@ public class MovementController : MonoBehaviour
     private bool isHolding;           // is the player holding the model virus?
 
     // Slow down animation params
-    private bool isNearWall;          // is this virus near a wall?
-    private int wallsEntered;         // variable used to ensure isNearWall is only false when not near any wall object
-    public Animator linDampAnimator;         // animator to drive linear damping near walls
+    public bool isNearWall;          // is this virus near a wall?
+    public int wallsEntered;         // variable used to ensure isNearWall is only false when not near any wall object
+    public Animator linDampAnimator;  // animator to drive linear damping near walls
 
     // Drift back animation params
     [SerializeField] private float driftDuration = 3f;
@@ -69,21 +69,8 @@ public class MovementController : MonoBehaviour
             Vector3 displacement = modelVirus.GetComponent<Transform>().localPosition - startingPosition;
 
             // Move this object according to the displacement of the model virus
-            rigid.AddForce(displacement * movementScalar, ForceMode.Acceleration);
+            if (linDampAnimator.GetCurrentAnimatorStateInfo(0).IsName("virusNormal")) { rigid.AddForce(displacement * movementScalar, ForceMode.Acceleration); }
         }
-    }
-
-    void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("wall") && !isNearWall) { isNearWall = true; }
-        wallsEntered += 1;
-        linDampAnimator.SetTrigger("slowVirus");
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        wallsEntered -= 1;
-        if (other.CompareTag("wall") && wallsEntered == 0) { isNearWall = false; }
     }
 
     private IEnumerator DriftBack()
