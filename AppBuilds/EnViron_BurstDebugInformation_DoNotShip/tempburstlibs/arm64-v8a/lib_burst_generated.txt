@@ -10,6 +10,7 @@ Library: D:\DXR\EnViron\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_gener
 --target-framework=NetFramework
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\DXR\EnViron\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.2.4f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=D:\DXR\EnViron\Library\Burst
 --output=D:\DXR\EnViron\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated
@@ -111,6 +112,7 @@ Library: D:\DXR\EnViron\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_gener
 --float-mode=Fast
 --generate-link-xml=Temp\burst.link.xml
 --temp-folder=D:\DXR\EnViron\Temp\Burst
+--debug=Full
 --key-folder=C:/Program Files/Unity/Hub/Editor/6000.2.4f1/Editor/Data/PlaybackEngines/AndroidPlayer
 --decode-folder=D:\DXR\EnViron\Library\Burst
 --output=D:\DXR\EnViron\Temp\BurstOutput\tempburstlibs\arm64-v8a\lib_burst_generated
