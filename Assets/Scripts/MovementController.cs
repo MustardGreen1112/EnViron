@@ -8,7 +8,6 @@ using UnityEngine;
  *      -Acceleration scales with virus displacement
  *  -When player lets go of model virus, increases virus linear damping, slowing it to a stop
  */
-
 public class MovementController : MonoBehaviour
 {
     [SerializeField] private GameObject modelVirus;

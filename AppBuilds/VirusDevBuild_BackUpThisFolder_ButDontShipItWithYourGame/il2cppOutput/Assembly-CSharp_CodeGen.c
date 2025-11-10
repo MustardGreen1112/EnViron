@@ -7,6 +7,9 @@
 
 
 
+extern void HologramController_Start_m75006DAB0611DD9016A502E320231B2ADD83ABAC (void);
+extern void HologramController_Update_mD58B4ABB2EBC00EB2A20A40D0AB5C39370BA5ABD (void);
+extern void HologramController__ctor_m2CE679A4940DD5C721BFC95E03547E17808A8E8C (void);
 extern void ModelVirusController_Start_m3F1D11E95FAEEBFCB16A9962499D0519A9FBF94E (void);
 extern void ModelVirusController_Update_mC7A46B6474305E82F68FEAD8C3DA1B3B980D0347 (void);
 extern void ModelVirusController_LateUpdate_mD44CF6382385F7C3B8D4262C2ACD096BAA11AD00 (void);
@@ -111,8 +114,11 @@ extern void ThirdPersonController_OnDrawGizmosSelected_mCD3D7F711815BC95C166CB8E
 extern void ThirdPersonController_OnFootstep_mFE54F581AB0F72FC34208BCB6ABF77311BCC3D02 (void);
 extern void ThirdPersonController_OnLand_mAF1A04288C4B0ED39ACA52599F18D059F78D41C8 (void);
 extern void ThirdPersonController__ctor_mA2ECE265C51A281DA13F2344E30363399DD64321 (void);
-static Il2CppMethodPointer s_methodPointers[104] = 
+static Il2CppMethodPointer s_methodPointers[107] = 
 {
+	HologramController_Start_m75006DAB0611DD9016A502E320231B2ADD83ABAC,
+	HologramController_Update_mD58B4ABB2EBC00EB2A20A40D0AB5C39370BA5ABD,
+	HologramController__ctor_m2CE679A4940DD5C721BFC95E03547E17808A8E8C,
 	ModelVirusController_Start_m3F1D11E95FAEEBFCB16A9962499D0519A9FBF94E,
 	ModelVirusController_Update_mC7A46B6474305E82F68FEAD8C3DA1B3B980D0347,
 	ModelVirusController_LateUpdate_mD44CF6382385F7C3B8D4262C2ACD096BAA11AD00,
@@ -218,8 +224,11 @@ static Il2CppMethodPointer s_methodPointers[104] =
 	ThirdPersonController_OnLand_mAF1A04288C4B0ED39ACA52599F18D059F78D41C8,
 	ThirdPersonController__ctor_mA2ECE265C51A281DA13F2344E30363399DD64321,
 };
-static const int32_t s_InvokerIndices[104] = 
+static const int32_t s_InvokerIndices[107] = 
 {
+	20826,
+	20826,
+	20826,
 	20826,
 	20826,
 	20826,
@@ -329,7 +338,7 @@ IL2CPP_EXTERN_C const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule;
 const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule = 
 {
 	"Assembly-CSharp.dll",
-	104,
+	107,
 	s_methodPointers,
 	0,
 	NULL,

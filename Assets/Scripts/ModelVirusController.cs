@@ -7,7 +7,6 @@ using UnityEngine;
  *  -Freezes rotation of model virus
  *  -When player lets go of model virus, drives its animation back to original position
  */
-
 public class ModelVirusController : MonoBehaviour
 {
     /* Variables */

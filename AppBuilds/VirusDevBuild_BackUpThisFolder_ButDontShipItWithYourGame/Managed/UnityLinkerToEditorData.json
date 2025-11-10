@@ -324,7 +324,9 @@
           },
           {
             "name": "LineRenderer",
-            "scenes": [],
+            "scenes": [
+              "Assets/Scenes/modelVirusMovementTest.unity"
+            ],
             "dependencyType": 0,
             "icon": null
           },
