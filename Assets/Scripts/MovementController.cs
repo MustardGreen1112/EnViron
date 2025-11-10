@@ -10,12 +10,10 @@ using UnityEngine;
  */
 public class MovementController : MonoBehaviour
 {
+    /* Params (editable from inspector) */
     [SerializeField] private GameObject modelVirus;
-
-    // Movement scalars
-    [SerializeField] private float movementScalar = 7f;       // determines what the force on the virus will
-                                                              // be relative to the displacement of the model
-    [SerializeField] private float releaseLinDamping = 0.7f;     // linear damping applied when object is released
+    [SerializeField] private float movementScalar = 7f;       
+    [SerializeField] private float releaseLinDamping = 0.7f;     
 
     private Rigidbody rigid;          // rigidbody of this object
 

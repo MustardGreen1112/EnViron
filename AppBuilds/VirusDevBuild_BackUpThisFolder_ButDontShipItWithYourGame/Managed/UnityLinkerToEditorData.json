@@ -84,6 +84,12 @@
             "icon": null
           },
           {
+            "name": "AvatarMask",
+            "scenes": [],
+            "dependencyType": 0,
+            "icon": null
+          },
+          {
             "name": "IConstraint",
             "scenes": [],
             "dependencyType": 1,
@@ -106,6 +112,12 @@
             "scenes": [],
             "dependencyType": 1,
             "icon": null
+          },
+          {
+            "name": "Required by Director Module",
+            "scenes": [],
+            "dependencyType": 2,
+            "icon": "package/com.unity.modules.director"
           }
         ]
       },
@@ -174,6 +186,12 @@
             "scenes": [],
             "dependencyType": 1,
             "icon": null
+          },
+          {
+            "name": "Required by Director Module",
+            "scenes": [],
+            "dependencyType": 2,
+            "icon": "package/com.unity.modules.director"
           }
         ]
       },
@@ -619,6 +637,12 @@
             "icon": "package/com.unity.modules.crashreporting"
           },
           {
+            "name": "Required by Director Module",
+            "scenes": [],
+            "dependencyType": 2,
+            "icon": "package/com.unity.modules.director"
+          },
+          {
             "name": "Required by GraphicsStateCollectionSerializer Module",
             "scenes": [],
             "dependencyType": 2,
@@ -820,6 +844,17 @@
             "scenes": [],
             "dependencyType": 3,
             "icon": "class/PlayerSettings"
+          }
+        ]
+      },
+      {
+        "name": "Director",
+        "dependencies": [
+          {
+            "name": "PlayableDirector",
+            "scenes": [],
+            "dependencyType": 0,
+            "icon": null
           }
         ]
       },
@@ -1226,6 +1261,12 @@
             "scenes": [],
             "dependencyType": 2,
             "icon": "package/com.unity.modules.crashreporting"
+          },
+          {
+            "name": "Required by Director Module",
+            "scenes": [],
+            "dependencyType": 2,
+            "icon": "package/com.unity.modules.director"
           },
           {
             "name": "Required by GraphicsStateCollectionSerializer Module",
@@ -1719,19 +1760,25 @@
           },
           {
             "name": "VFXRenderer",
-            "scenes": [],
+            "scenes": [
+              "Assets/Scenes/modelVirusMovementTest.unity"
+            ],
             "dependencyType": 0,
             "icon": null
           },
           {
             "name": "VisualEffect",
-            "scenes": [],
+            "scenes": [
+              "Assets/Scenes/modelVirusMovementTest.unity"
+            ],
             "dependencyType": 0,
             "icon": null
           },
           {
             "name": "VisualEffectAsset",
-            "scenes": [],
+            "scenes": [
+              "Assets/Scenes/modelVirusMovementTest.unity"
+            ],
             "dependencyType": 0,
             "icon": null
           },
