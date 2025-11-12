@@ -12,7 +12,7 @@ public class MovementController : MonoBehaviour
 {
     /* Params (editable from inspector) */
     [SerializeField] private GameObject modelVirus;
-    [SerializeField] private float movementScalar = 7f;       
+    [SerializeField] private float movementScalar = 20f;       
     [SerializeField] private float releaseLinDamping = 0.7f;     
 
     private Rigidbody rigid;          // rigidbody of this object

@@ -39,6 +39,13 @@ extern void SlowDownController__ctor_m2627E9A8AEE445164AE6DF3B4B34E2DA40A1BA28 (
 extern void testScript_Start_mD90A839613AA864D376446F34354A24FE6B92F8A (void);
 extern void testScript_Update_m529679565B3204583D595ECE20BCE4B15062D8D6 (void);
 extern void testScript__ctor_m49A3BB6D3E3C5F27C5CF1BA40D416DA83AF04973 (void);
+extern void VirusGenController_Start_m9641D86FB53B2FC82F46AAF330C311C8F8D0FA60 (void);
+extern void VirusGenController_TurnOnVirusGen_m3F85FB8585D4AA97F8F941636D121182F786E078 (void);
+extern void VirusGenController_TurnOffVirusGen_mA7B6C94F1A71C25D3E19CCC57A91E6F434AA9B84 (void);
+extern void VirusGenController__ctor_mB3ABA4D15CD21F168DD98164ED72D4A0ABC65FD0 (void);
+extern void VirusGenTrigger_Start_m8673773A97E859EB93E78B9A6741B57687E05436 (void);
+extern void VirusGenTrigger_OnTriggerEnter_m3242BD3A19DA8FC0DDE451500E97B3A44420A5BF (void);
+extern void VirusGenTrigger__ctor_mAE04EE95461A08BEB69E8DBF6A1D74E6C396029D (void);
 extern void MobileDisableAutoSwitchControls_Start_m5E1CF874A11971B24762BC74EE94AB81CFF45368 (void);
 extern void MobileDisableAutoSwitchControls_DisableAutoSwitchControls_m156A87BFC0F55EC1BD438F032CB959A464A39AE4 (void);
 extern void MobileDisableAutoSwitchControls__ctor_mF934985411953E473C075F0C8680F75C118E8FCC (void);
@@ -115,7 +122,7 @@ extern void ThirdPersonController_OnDrawGizmosSelected_mCD3D7F711815BC95C166CB8E
 extern void ThirdPersonController_OnFootstep_mFE54F581AB0F72FC34208BCB6ABF77311BCC3D02 (void);
 extern void ThirdPersonController_OnLand_mAF1A04288C4B0ED39ACA52599F18D059F78D41C8 (void);
 extern void ThirdPersonController__ctor_mA2ECE265C51A281DA13F2344E30363399DD64321 (void);
-static Il2CppMethodPointer s_methodPointers[108] = 
+static Il2CppMethodPointer s_methodPointers[115] = 
 {
 	HologramController_Start_m75006DAB0611DD9016A502E320231B2ADD83ABAC,
 	HologramController_Update_mD58B4ABB2EBC00EB2A20A40D0AB5C39370BA5ABD,
@@ -149,6 +156,13 @@ static Il2CppMethodPointer s_methodPointers[108] =
 	testScript_Start_mD90A839613AA864D376446F34354A24FE6B92F8A,
 	testScript_Update_m529679565B3204583D595ECE20BCE4B15062D8D6,
 	testScript__ctor_m49A3BB6D3E3C5F27C5CF1BA40D416DA83AF04973,
+	VirusGenController_Start_m9641D86FB53B2FC82F46AAF330C311C8F8D0FA60,
+	VirusGenController_TurnOnVirusGen_m3F85FB8585D4AA97F8F941636D121182F786E078,
+	VirusGenController_TurnOffVirusGen_mA7B6C94F1A71C25D3E19CCC57A91E6F434AA9B84,
+	VirusGenController__ctor_mB3ABA4D15CD21F168DD98164ED72D4A0ABC65FD0,
+	VirusGenTrigger_Start_m8673773A97E859EB93E78B9A6741B57687E05436,
+	VirusGenTrigger_OnTriggerEnter_m3242BD3A19DA8FC0DDE451500E97B3A44420A5BF,
+	VirusGenTrigger__ctor_mAE04EE95461A08BEB69E8DBF6A1D74E6C396029D,
 	MobileDisableAutoSwitchControls_Start_m5E1CF874A11971B24762BC74EE94AB81CFF45368,
 	MobileDisableAutoSwitchControls_DisableAutoSwitchControls_m156A87BFC0F55EC1BD438F032CB959A464A39AE4,
 	MobileDisableAutoSwitchControls__ctor_mF934985411953E473C075F0C8680F75C118E8FCC,
@@ -226,7 +240,7 @@ static Il2CppMethodPointer s_methodPointers[108] =
 	ThirdPersonController_OnLand_mAF1A04288C4B0ED39ACA52599F18D059F78D41C8,
 	ThirdPersonController__ctor_mA2ECE265C51A281DA13F2344E30363399DD64321,
 };
-static const int32_t s_InvokerIndices[108] = 
+static const int32_t s_InvokerIndices[115] = 
 {
 	21145,
 	21145,
@@ -259,6 +273,13 @@ static const int32_t s_InvokerIndices[108] =
 	21145,
 	21145,
 	21145,
+	21145,
+	21145,
+	21145,
+	21145,
+	21145,
+	21145,
+	15984,
 	21145,
 	21145,
 	21145,
@@ -341,7 +362,7 @@ IL2CPP_EXTERN_C const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule;
 const Il2CppCodeGenModule g_AssemblyU2DCSharp_CodeGenModule = 
 {
 	"Assembly-CSharp.dll",
-	108,
+	115,
 	s_methodPointers,
 	0,
 	NULL,

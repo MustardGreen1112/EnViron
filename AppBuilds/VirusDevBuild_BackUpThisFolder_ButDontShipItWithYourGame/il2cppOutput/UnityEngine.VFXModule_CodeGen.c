@@ -150,7 +150,6 @@ extern void VisualEffect_HasUInt_mECAE541A87CE6A7470ACA49C53FF5D5E11DF1047 (void
 extern void VisualEffect_HasFloat_m96F1E6C9BB23E20D1BB730D3356E3E794D410B25 (void);
 extern void VisualEffect_HasVector4_m9BD809A0E57D0083CC65C3F8240FF3A55F866811 (void);
 extern void VisualEffect_HasTexture_mC57802FAF381382F66E367BC2CAA41E6BA335D2D (void);
-extern void VisualEffect_SetInt_m7FB97FFD6FB9808763E644D9E8CE2F5174ED8079 (void);
 extern void VisualEffect_SetUInt_m73FB569FA8DABE4CF67EB6D4E2D21A539CE43EAC (void);
 extern void VisualEffect_SetFloat_mB59095AC406A373BC587551B5A4781719F608F51 (void);
 extern void VisualEffect_SetVector4_m2689F7AA23636CA94447027AFE213A03F51B261C (void);
@@ -188,7 +187,7 @@ extern void VisualEffect_SetTexture_Injected_m6A500837AF061577E79224B7B819F1ADE9
 extern void VisualEffect_get_time_Injected_mE20E5B2234A44E9669D55FB8F7E38BCB57EDDF93 (void);
 extern void VisualEffect_Simulate_Injected_m4CE47009AEF83F550932C935C1F8A6B5201DA2D5 (void);
 extern void VFXRenderer__ctor_mF0F7DA1BF087936A6A95638221B09CE05EA475BF (void);
-static Il2CppMethodPointer s_methodPointers[184] = 
+static Il2CppMethodPointer s_methodPointers[183] = 
 {
 	VFXEventAttribute__ctor_m08E26E4F79DA1062FC43501FDFE00B9EF3ED3AE1,
 	VFXEventAttribute__ctor_mB30DC279ACFC41DA8C7ABB9FC73B9FE763CE1B86,
@@ -336,7 +335,6 @@ static Il2CppMethodPointer s_methodPointers[184] =
 	VisualEffect_HasFloat_m96F1E6C9BB23E20D1BB730D3356E3E794D410B25,
 	VisualEffect_HasVector4_m9BD809A0E57D0083CC65C3F8240FF3A55F866811,
 	VisualEffect_HasTexture_mC57802FAF381382F66E367BC2CAA41E6BA335D2D,
-	VisualEffect_SetInt_m7FB97FFD6FB9808763E644D9E8CE2F5174ED8079,
 	VisualEffect_SetUInt_m73FB569FA8DABE4CF67EB6D4E2D21A539CE43EAC,
 	VisualEffect_SetFloat_mB59095AC406A373BC587551B5A4781719F608F51,
 	VisualEffect_SetVector4_m2689F7AA23636CA94447027AFE213A03F51B261C,
@@ -384,7 +382,7 @@ static Il2CppTokenAdjustorThunkPair s_adjustorThunks[3] =
 	{ 0x06000070, VFXOutputEventArgs_get_eventAttribute_m38C5944E1F1FC4355BB632849C6C7D56AFA4C6B0_AdjustorThunk },
 	{ 0x06000071, VFXOutputEventArgs__ctor_m4A6030F4BF7E27F5F682E0FC4211F53DF866ED56_AdjustorThunk },
 };
-static const int32_t s_InvokerIndices[184] = 
+static const int32_t s_InvokerIndices[183] = 
 {
 	3744,
 	15901,
@@ -532,7 +530,6 @@ static const int32_t s_InvokerIndices[184] =
 	11386,
 	11386,
 	11386,
-	8213,
 	8274,
 	8243,
 	8281,
@@ -575,7 +572,7 @@ IL2CPP_EXTERN_C const Il2CppCodeGenModule g_UnityEngine_VFXModule_CodeGenModule;
 const Il2CppCodeGenModule g_UnityEngine_VFXModule_CodeGenModule = 
 {
 	"UnityEngine.VFXModule.dll",
-	184,
+	183,
 	s_methodPointers,
 	3,
 	s_adjustorThunks,
