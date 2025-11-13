@@ -6,7 +6,7 @@ using UnityEngine.VFX;
  *  -Every frame, renders line between hologram and model virus
  *  -Toggles visibility of hologram based on 
  */
-public class HologramController : MonoBehaviour
+public class HologramVirusController : MonoBehaviour
 {
     [SerializeField] private GameObject hologram;
     [SerializeField] private GameObject modelVirus;

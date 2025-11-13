@@ -13,11 +13,11 @@ public class ModelVirusController : MonoBehaviour
     private Quaternion startingRotation;
     private Vector3 startingPosition;
     private bool isHeld;
-    private HologramController hologramController;
+    private HologramVirusController hologramVirusController;
 
     /* Params (editable from inspector) */
     [SerializeField] private float driftDuration = 0.75f;
-    [SerializeField] private GameObject holoControlObj;
+    [SerializeField] private GameObject holoVirusControlObj;
     
     [SerializeField] private OVRInput.Controller controller;
     [SerializeField] private OVRInput.RawButton grabButton;
@@ -32,7 +32,7 @@ public class ModelVirusController : MonoBehaviour
         startingPosition = transform.localPosition;
         isHeld = false;
 
-        hologramController = holoControlObj.GetComponent<HologramController>();
+        hologramVirusController = holoVirusControlObj.GetComponent<HologramVirusController>();
     }
 
     // Update is called once every frame
@@ -43,7 +43,7 @@ public class ModelVirusController : MonoBehaviour
         if (OVRInput.GetDown(grabButton))
         {
             isHeld = true;
-            hologramController.DeactivateParticles();
+            hologramVirusController.DeactivateParticles();
             StopAllCoroutines();
         }
 
