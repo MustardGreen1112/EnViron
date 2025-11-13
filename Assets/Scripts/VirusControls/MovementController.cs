@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.Profiling;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -21,6 +22,8 @@ public class MovementController : MonoBehaviour
     public bool isNearWall;          
     public int wallsEntered;         // variable used to ensure isNearWall is only false when not near any wall object
     public bool slowedDown;
+
+    public int antibodiesAttached;
 
     private ModelVirusController modelVirusController;
 
@@ -86,5 +89,10 @@ public class MovementController : MonoBehaviour
     public int GetWallCount()
     {
         return wallsEntered;
+    }
+
+    public int GetAntibodiesAttached()
+    {
+        return antibodiesAttached;
     }
 }
