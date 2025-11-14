@@ -20,18 +20,21 @@ using UnityEngine;
 public class KillerTCell : MonoBehaviour
 {
     /* Params (editable from inspector) */
-    [SerializeField] float baseMoveSpeed = 1f;
-    [SerializeField] float attackMoveSpeedMult = 1.25f;
+    [SerializeField] float chaseSpeed = 5f;
+    [SerializeField] float returnSpeed = 2.5f;
     [SerializeField] float maxTimeNoLOS = 2f; // in seconds
+    [SerializeField] float roamTravelTime = 4f;
     [SerializeField] GameObject virus;
 
     /* External information (passed at start) */
-    private Vector3[] intersections;
+    [SerializeField] Intersection[] intersections; // replace with database of intersections here
+    [SerializeField] Edge[] edges; // replace with database of curves here
+    // include setters for both of these somewhere in the code below
 
     /* Internal variables */
     private string currentMode;
     private int antibodiesAttachedToVirus;
-    private float currSpeed;
+    private float passedTime;
 
     private MovementController virusController;
 
@@ -42,18 +45,15 @@ public class KillerTCell : MonoBehaviour
 
         currentMode = "Roaming";
         antibodiesAttachedToVirus = 0;
-        currSpeed = baseMoveSpeed;
+        passedTime = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        currSpeed = baseMoveSpeed;
-        if (currentMode == "AttackRoaming" || currentMode == "Return")
+        if (currentMode == "Roaming" || currentMode == "AttackRoaming")
         {
-            currSpeed *= attackMoveSpeedMult;
+            
         }
-
-
     }
 }
