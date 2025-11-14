@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using Oculus.Platform.Models;
 using UnityEngine;
 
 /*
@@ -24,6 +27,8 @@ public class KillerTCell : MonoBehaviour
     [SerializeField] float returnSpeed = 2.5f;
     [SerializeField] float maxTimeNoLOS = 2f; // in seconds
     [SerializeField] float roamTravelTime = 4f;
+    [SerializeField] int startingIntersection = 0;
+    [SerializeField] int randomModifier = 0; // added to random seed; allows individual predictable randomness
     [SerializeField] GameObject virus;
 
     /* External information (passed at start) */
@@ -35,6 +40,12 @@ public class KillerTCell : MonoBehaviour
     private string currentMode;
     private int antibodiesAttachedToVirus;
     private float passedTime;
+    private System.Random rand;
+
+    // Navigation variables
+    private int destinationIntersection;
+    private int currentEdge;
+    private bool onEdge;
 
     private MovementController virusController;
 
@@ -46,6 +57,19 @@ public class KillerTCell : MonoBehaviour
         currentMode = "Roaming";
         antibodiesAttachedToVirus = 0;
         passedTime = 0;
+
+        destinationIntersection = startingIntersection;
+        currentEdge = -1;
+        onEdge = false;
+
+        if (ProjectWideConsts.randomSeed == 0)
+        {
+            rand = new System.Random();
+        } 
+        else
+        {
+            rand = new System.Random(ProjectWideConsts.randomSeed + randomModifier);
+        }
     }
 
     // Update is called once per frame
@@ -53,7 +77,29 @@ public class KillerTCell : MonoBehaviour
     {
         if (currentMode == "Roaming" || currentMode == "AttackRoaming")
         {
-            
+            // If not on an edge already, pick an edge and begin traveling it
+            if (!onEdge)
+            {
+                int numOfConnectedEdges = intersections[destinationIntersection].inEdges.Length + 
+                intersections[destinationIntersection].outEdges.Length;
+                List<int> IDs = new();
+
+                // If regular roaming, pick randomly, with bias away from an edge that we just came from
+                if (currentMode == "Roaming")
+                {
+                    foreach (Edge edge in intersections[destinationIntersection].inEdges) {
+                        IDs.Append<int>(edge.ID);
+                        if (edge.ID != currentEdge) { IDs.Append<int>(edge.ID); }
+                    }
+
+                    foreach (Edge edge in intersections[destinationIntersection].outEdges) {
+                        IDs.Append<int>(edge.ID);
+                        if (edge.ID != currentEdge) { IDs.Append<int>(edge.ID); }
+                    }
+                }
+
+                currentEdge = IDs[rand.Next(numOfConnectedEdges)];
+            }
         }
     }
 }
