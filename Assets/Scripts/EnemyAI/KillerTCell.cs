@@ -1,6 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Oculus.Platform.Models;
+using Meta.XR.MRUtilityKit.SceneDecorator;
 using UnityEngine;
 
 /*
@@ -75,31 +76,132 @@ public class KillerTCell : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+
         if (currentMode == "Roaming" || currentMode == "AttackRoaming")
         {
             // If not on an edge already, pick an edge and begin traveling it
             if (!onEdge)
             {
+                bool isForward = false;
+
                 int numOfConnectedEdges = intersections[destinationIntersection].inEdges.Length + 
                 intersections[destinationIntersection].outEdges.Length;
-                List<int> IDs = new();
 
                 // If regular roaming, pick randomly, with bias away from an edge that we just came from
-                if (currentMode == "Roaming")
-                {
-                    foreach (Edge edge in intersections[destinationIntersection].inEdges) {
-                        IDs.Append<int>(edge.ID);
-                        if (edge.ID != currentEdge) { IDs.Append<int>(edge.ID); }
-                    }
+                if (currentMode == "Roaming") { (isForward, currentEdge) = PickRandomConnectedEdge(numOfConnectedEdges); }
 
-                    foreach (Edge edge in intersections[destinationIntersection].outEdges) {
-                        IDs.Append<int>(edge.ID);
-                        if (edge.ID != currentEdge) { IDs.Append<int>(edge.ID); }
-                    }
-                }
-
-                currentEdge = IDs[rand.Next(numOfConnectedEdges)];
+                // If attack roaming, pick edge that brings us closest to player
+                if (currentMode == "AttackRoaming") { (isForward, currentEdge) = PickBestConnectedEdge(); }
+                
+                onEdge = true;
+                StartCoroutine(TravelEdge(isForward));
             }
         }
+    }
+
+    /* Helper functions */
+
+    /*
+     * Picks connected edge semi-randomly (weighted against picking current edge)
+     */
+    (bool, int) PickRandomConnectedEdge(int numOfConnectedEdges)
+    {
+        List<int> IDs = new();
+
+        // Used to determine whether chosen edge goes forward or backward from current intersection
+        bool isForward = true;
+        int backEdgesAmt = 0;
+
+        foreach (Edge edge in intersections[destinationIntersection].inEdges) 
+        {
+            IDs.Append<int>(edge.ID);
+            backEdgesAmt += 1;
+            if (edge.ID != currentEdge) { 
+                IDs.Append<int>(edge.ID);
+                backEdgesAmt += 1;
+            }
+        }
+
+        foreach (Edge edge in intersections[destinationIntersection].outEdges) 
+        {
+            IDs.Append<int>(edge.ID);
+            if (edge.ID != currentEdge) { IDs.Append<int>(edge.ID); }
+        }
+
+        // Used to determine whether chosen edge goes forward or backward from current intersection
+        int chosenIndex = rand.Next(IDs.Count);
+        if (chosenIndex < backEdgesAmt) { isForward = false; } 
+
+        return (isForward, IDs[chosenIndex]);
+    }
+
+    /*
+     * Picks connected edge, minimizing distance from other end to player
+     */
+    (bool, int) PickBestConnectedEdge()
+    {
+        int bestEdge = -1;
+        float bestDistance = -1f;
+
+        bool isForward = false;
+
+        foreach (Edge edge in intersections[destinationIntersection].inEdges)
+        {
+            // Special case for first edge checked
+            if (bestEdge == -1) 
+            { 
+                bestEdge = edge.ID; 
+                bestDistance = Vector3.Distance(edge.edge[0], virus.transform.position);
+            }
+            else
+            {
+                float candidateDistance = Vector3.Distance(edge.edge[0], virus.transform.position);
+                if (candidateDistance < bestDistance)
+                {
+                    bestEdge = edge.ID;
+                    bestDistance = candidateDistance;
+                }
+            }
+        }
+
+        foreach (Edge edge in intersections[destinationIntersection].outEdges)
+        {
+           float candidateDistance = Vector3.Distance(edge.edge[1], virus.transform.position);
+            if (candidateDistance < bestDistance)
+            {
+                bestEdge = edge.ID;
+                bestDistance = candidateDistance;
+                isForward = true;
+            } 
+        }
+
+        return (isForward, bestEdge);
+    }
+
+    /*
+     * Coroutine that causes white blood cell to drift across blood vessel segment
+     * Stops when either motion is complete or if the mode changes off of a "roaming" state
+     * Can go forward or backward across a segment depending on forward parameter
+     */
+    private IEnumerator TravelEdge(bool isForward)
+    {
+        float timer = 0f;
+
+        while (timer < roamTravelTime)
+        {
+            if (currentMode != "Roaming" && currentMode != "AttackRoaming") { break; }
+            timer += Time.deltaTime;
+
+            float t = timer / roamTravelTime;
+            Vector3 newLocation; 
+            if (isForward) { newLocation = Vector3.Lerp(edges[currentEdge].edge[0], edges[currentEdge].edge[1], t); }
+            else { newLocation = Vector3.Lerp(edges[currentEdge].edge[0], edges[currentEdge].edge[1], 1 - t); }
+            transform.localPosition = newLocation;
+
+            yield return null;
+        }
+
+        onEdge = false;
     }
 }
