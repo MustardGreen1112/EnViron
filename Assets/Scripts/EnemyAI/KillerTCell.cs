@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Meta.XR.MRUtilityKit.SceneDecorator;
 using UnityEngine;
+using VascularGenerator.DataStructures;
 
 /*
  * T Cell class
@@ -36,6 +37,8 @@ public class KillerTCell : MonoBehaviour
     [SerializeField] Intersection[] intersections; // replace with database of intersections here
     [SerializeField] Edge[] edges; // replace with database of curves here
     // include setters for both of these somewhere in the code below
+    public MapGenerator mapgen;
+    private Tree<VascularSegment> tree;
 
     /* Internal variables */
     private string currentMode;
@@ -53,6 +56,14 @@ public class KillerTCell : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        tree = mapgen.segmentTreeRoot;
+        Tree<VascularSegment> randNode = tree.GetRandomNode();
+        VascularSegment randSegment = randNode.GetValue();
+        double[] startPoint = randSegment.startPoint;
+        double[] endPoint = randSegment.endPoint;
+        double radius = randSegment.radius;
+        
+
         virusController = virus.GetComponent<MovementController>();
 
         currentMode = "Roaming";
