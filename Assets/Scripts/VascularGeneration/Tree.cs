@@ -103,6 +103,52 @@ namespace VascularGenerator.DataStructures
             }
         }
 
+        //returns the number of nodes in the tree
+        public int GetNumberOfNodes()
+        {
+            if (this.children.Count > 0)
+            {
+                return 1;
+            }
+            
+            int numberOfNodes = 1;
+            foreach (Tree<T> c in children)
+            {
+                numberOfNodes += c.GetNumberOfNodes();
+            }
+
+            return numberOfNodes;
+        }
+
+        //function that returns a random node in the tree
+        public Tree<T> GetRandomNode()
+        {   
+            Random random = new Random();
+            int count = random.Next(this.GetNumberOfNodes());
+            Tree<T> output = this;
+            List<Tree<T>> toVisit = new(){this};
+            while (toVisit.Count > 0)
+            {
+                Tree<T> current = toVisit[0];
+                toVisit.RemoveAt(0);
+
+                if (count == 0)
+                {
+                    output = current;
+                    break;
+                }
+                else
+                {
+                    count--;
+                }
+                if (current.GetChildren().Count ==0){continue;}
+                foreach(Tree<T> c in current.GetChildren()){toVisit.Add(c);}
+            }
+
+            return output;
+
+        }
+
         public override string ToString()
         {
             string output = "Tree Node:\n"+ value.ToString();
@@ -119,5 +165,6 @@ namespace VascularGenerator.DataStructures
             }
             return output;
         }
+
     }
 }
