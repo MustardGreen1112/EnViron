@@ -17216,7 +17216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1804305547
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17230,7 +17230,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGenerator
   buildingBlock: {fileID: 2019159225}
-  parent: {fileID: 0}
+  LoadFromDummyGraph: 0
 --- !u!4 &1804305548
 Transform:
   m_ObjectHideFlags: 0
@@ -19750,10 +19750,10 @@ SceneRoots:
   - {fileID: 900755449}
   - {fileID: 1083295570}
   - {fileID: 997485350}
-  - {fileID: 1804305548}
   - {fileID: 2019159229}
   - {fileID: 1690758554}
   - {fileID: 1244183212}
   - {fileID: 1141319026}
   - {fileID: 2096390205}
   - {fileID: 1790229732}
+  - {fileID: 1804305548}
