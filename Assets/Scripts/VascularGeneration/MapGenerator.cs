@@ -7,7 +7,7 @@ public class MapGenerator : MonoBehaviour
 {
     public GameObject buildingBlock;
     public GameObject parent;
-    float scaler = 10;
+    float scaler = 10; //scalar for radius
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
