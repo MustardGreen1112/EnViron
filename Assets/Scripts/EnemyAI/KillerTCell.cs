@@ -119,7 +119,7 @@ public class KillerTCell : MonoBehaviour
                 }
 
                 // If regular roaming, pick randomly, with bias away from an edge that we just came from
-                if (currentMode == "Roaming") { (isForward, currentEdge) = PickRandomConnectedEdge(numOfConnectedEdges); }
+                if (currentMode == "Roaming") { (isForward, currentNode) = PickRandomConnectedEdge(numOfConnectedEdges); }
 
                 // If attack roaming, pick edge that brings us closest to player
                 if (currentMode == "AttackRoaming") { (isForward, currentEdge) = PickBestConnectedEdge(); }
@@ -135,26 +135,14 @@ public class KillerTCell : MonoBehaviour
     /*
      * Picks connected edge semi-randomly (weighted against picking current edge)
      */
-    (bool, int) PickRandomConnectedEdge(int numOfConnectedEdges)
+    (bool, Tree<VascularSegment>) PickRandomConnectedEdge(int numOfConnectedEdges)
     {
-        List<int> IDs = new();
         List<Tree<VascularSegment>> neighbors = new();
 
         // Used to determine whether chosen edge goes forward or backward from current intersection
         bool nextIsForward = true;
-        int backEdgesAmt = 0;
 
-        // foreach (Edge edge in intersections[destinationIntersection].inEdges) 
-        // {
-        //     IDs.Append<int>(edge.ID);
-        //     backEdgesAmt += 1;
-        //     if (edge.ID != currentEdge) { 
-        //         IDs.Append<int>(edge.ID);
-        //         backEdgesAmt += 1;
-        //     }
-        // }
-
-        if (isForward)
+        if (isForward) // if at the end of a segment
         {
             neighbors.Append(currentNode);
             foreach (Tree<VascularSegment> neighbor in currentNode.GetChildren())
@@ -163,8 +151,11 @@ public class KillerTCell : MonoBehaviour
                 neighbors.Append(neighbor);
             }
         }
-        else
+        else // if at the start of a segment
         {
+            if (currentNode.parent == null) {}
+            else 
+            {
             neighbors.Append(currentNode.parent);
             neighbors.Append(currentNode.parent);
             foreach (Tree<VascularSegment> neighbor in currentNode.GetParent().GetChildren())
@@ -172,19 +163,23 @@ public class KillerTCell : MonoBehaviour
                 neighbors.Append(neighbor);
                 if (neighbor == currentNode) { neighbors.Append(neighbor); }
             }
+            }
         }
 
-        // foreach (Edge edge in intersections[destinationIntersection].outEdges) 
-        // {
-        //     IDs.Append<int>(edge.ID);
-        //     if (edge.ID != currentEdge) { IDs.Append<int>(edge.ID); }
-        // }
+        int chosenIndex = rand.Next(numOfConnectedEdges);
+        Tree<VascularSegment> nextNode = neighbors[chosenIndex];
 
         // Used to determine whether chosen edge goes forward or backward from current intersection
-        int chosenIndex = rand.Next(IDs.Count);
-        if (chosenIndex < backEdgesAmt) { isForward = false; } 
+        if (isForward)
+        {
+            if ( nextNode == currentNode) { nextIsForward = false; }
+        }
+        else
+        {
+            if ( nextNode == currentNode.GetParent() ) { nextIsForward = false; }
+        }
 
-        return (nextIsForward, IDs[chosenIndex]);
+        return (nextIsForward, nextNode);
     }
 
     /*
@@ -194,40 +189,46 @@ public class KillerTCell : MonoBehaviour
     {
         int bestEdge = -1;
         float bestDistance = -1f;
+        Tree<VascularSegment> bestNode = null;
 
-        bool isForward = false;
+        bool nextIsForward = false;
 
-        foreach (Edge edge in intersections[destinationIntersection].inEdges)
+        if (isForward) // if at the end of a segment
         {
-            // Special case for first edge checked
-            if (bestEdge == -1) 
-            { 
-                bestEdge = edge.ID; 
-                bestDistance = Vector3.Distance(edge.edge[0], virus.transform.position);
-            }
-            else
+            // Special case for first neighbor checked (self)
+            bestNode = currentNode;
+            bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().startPoint), virus.transform.position);
+
+            foreach (Tree<VascularSegment> neighbor in currentNode.GetChildren())
             {
-                float candidateDistance = Vector3.Distance(edge.edge[0], virus.transform.position);
+                float candidateDistance = Vector3.Distance(ConvertToVector(neighbor.GetValue().endPoint), virus.transform.position);
                 if (candidateDistance < bestDistance)
                 {
-                    bestEdge = edge.ID;
+                    bestNode = neighbor;
                     bestDistance = candidateDistance;
+                    nextIsForward = true;
+                }
+            }
+        }
+        else // if at the start of a segment
+        {
+            // Special case for the first neighbor checked (parent)
+            bestNode = currentNode.GetParent();
+            bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().startPoint), virus.transform.position);
+
+            foreach (Tree<VascularSegment> neighbor in currentNode.GetParent().GetChildren())
+            {
+                float candidateDistance = Vector3.Distance(ConvertToVector(neighbor.GetValue().endPoint), virus.transform.position);
+                if (candidateDistance < bestDistance)
+                {
+                    bestNode = neighbor;
+                    bestDistance = candidateDistance;
+                    nextIsForward = true;
                 }
             }
         }
 
-        foreach (Edge edge in intersections[destinationIntersection].outEdges)
-        {
-           float candidateDistance = Vector3.Distance(edge.edge[1], virus.transform.position);
-            if (candidateDistance < bestDistance)
-            {
-                bestEdge = edge.ID;
-                bestDistance = candidateDistance;
-                isForward = true;
-            } 
-        }
-
-        return (isForward, bestEdge);
+        return (nextIsForward, bestEdge);
     }
 
     /*
