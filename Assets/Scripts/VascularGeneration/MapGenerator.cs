@@ -9,6 +9,8 @@ public class MapGenerator : MonoBehaviour
     public GameObject parent;
     float scaler = 10; //scalar for radius
 
+    public Tree<VascularSegment> segmentTreeRoot; 
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -35,8 +37,8 @@ public class MapGenerator : MonoBehaviour
 
         parent = new GameObject("map");
 
-
-        CreateMesh(generator.inletSegment);
+        segmentTreeRoot = generator.inletSegment;
+        CreateMesh(segmentTreeRoot);
         buildingBlock.SetActive(false);
 
         Debug.Log("---Program Complete---");
