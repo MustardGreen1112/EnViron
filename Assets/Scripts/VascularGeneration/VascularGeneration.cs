@@ -35,7 +35,7 @@ public class VascularGeneration
 
 
     //constructor
-    public VascularGeneration(int perfusionRadius, int numberTerminalSegments, double terminalPressure, double inletPressure, double inletFlow, double y)
+    public VascularGeneration(int perfusionRadius, int numberTerminalSegments, double terminalPressure, double inletPressure, double inletFlow, double y, bool useVolumeOptimization, bool generateOnStart)
     {
         numTerminalPointsCreated = 0;
         terminalPointLocations = new bool[perfusionRadius * 2 +1, perfusionRadius * 2 +1];
@@ -49,9 +49,9 @@ public class VascularGeneration
         inletLocation = new double[] { 0, 0 }; //setting the inlet location to the the left corner of the circle
 
         // terminalLocations = GenerateTerminalPoints(perfusionRadius, numberTerminalSegments); //terminal location is a list of random uniformly distributed points within the perfusion area
-
-        inletSegment = GenerateVascularTree(inletLocation, terminalPressure, inletFlow, inletPressure);
-
+        if (generateOnStart){
+            inletSegment = GenerateVascularTree(inletLocation, terminalPressure, inletFlow, inletPressure, useVolumeOptimization);
+        }
         // //storing JSON
         // StoreJSON(inletSegment, "Jsons/testJSON.txt");
 
@@ -75,7 +75,7 @@ public class VascularGeneration
         return treeRoot;
     }
 
-    private Tree<VascularSegment> GenerateVascularTree(double[] inletLocation, double terminalPressure, double inletFlow, double inletPressure)
+    private Tree<VascularSegment> GenerateVascularTree(double[] inletLocation, double terminalPressure, double inletFlow, double inletPressure, bool useVolumeOptimization)
     {
         //first we create a segment from the inlet location to some random point that carries one terminal flow from the inlet to the terminal location
         double[] firstTerminalPoint = NewTerminalPoint(null);
@@ -103,7 +103,14 @@ public class VascularGeneration
             // terminalFlow = inletFlow/numTerminalPointsCreated;
 
             //getting the best bifurcation point and the node associated with it
-            double[] bestBifurcationPoint = GetBifurcationPointByDistance(inletSegment, nextTerminalPoint);
+            double[] bestBifurcationPoint;
+            if (useVolumeOptimization)
+            {
+                bestBifurcationPoint = GetBifurcationPointByVolume(inletSegment, nextTerminalPoint);
+            }else{
+                bestBifurcationPoint = GetBifurcationPointByDistance(inletSegment, nextTerminalPoint);
+            }
+
             Tree<VascularSegment> bestBifurcationPointNode = GetBifurcationNode(inletSegment, bestBifurcationPoint);
 
             //now that we have the best bifurcation point for the current terminal segment, we will insert a new segment into the tree and rescale everything accordingly
