@@ -41,7 +41,7 @@ public class MapGenerator : MonoBehaviour
         if (LoadFromDummyGraph)
         {
             //loading from JSON
-            tree = generator.LoadJSON("Jsons/dummyGraph.txt");
+            tree = generator.LoadJSON("Assets/Scripts/VascularGeneration/jsons/dummyGraph.txt");
             CreateMesh(tree);
         }
         else
