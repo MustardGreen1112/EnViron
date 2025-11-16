@@ -9,7 +9,7 @@ public class MapGenerator : MonoBehaviour
     public GameObject parent;
     float scaler = 10; //scalar for radius
 
-    public Tree<VascularSegment> segmentTreeRoot; 
+    public Tree<VascularSegment> segmentTreeRoot; //THIS IS THE MAP TREE STRUCTURE!!!!!!
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
