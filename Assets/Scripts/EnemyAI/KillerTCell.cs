@@ -48,15 +48,12 @@ public class KillerTCell : MonoBehaviour
     private System.Random rand;
 
     // Navigation variables
-    private int destinationIntersection;
-    private int currentEdge;
-    private bool onEdge;
     private bool isForward;
     Tree<VascularSegment> currentNode;
     VascularSegment currentSegment;
     private bool isTraveling;
-    double[] startPoint;
-    double[] endPoint;
+    Vector3 startPoint;
+    Vector3 endPoint;
 
     private MovementController virusController;
 
@@ -67,11 +64,10 @@ public class KillerTCell : MonoBehaviour
         tree = mapgen.segmentTreeRoot;
         currentNode = tree.GetRandomNode();
         currentSegment = currentNode.GetValue();
-        startPoint = currentSegment.startPoint;
-        endPoint = currentSegment.endPoint;
-        isForward = true;
+        startPoint = ConvertToVector(currentSegment.startPoint);
+        endPoint = ConvertToVector(currentSegment.endPoint);
 
-        transform.SetPositionAndRotation(ConvertToVector(endPoint), transform.rotation);
+        transform.SetPositionAndRotation(endPoint, transform.rotation);
         
 
         virusController = virus.GetComponent<MovementController>();
@@ -80,9 +76,8 @@ public class KillerTCell : MonoBehaviour
         antibodiesAttachedToVirus = 0;
         passedTime = 0;
 
-        destinationIntersection = startingIntersection;
-        currentEdge = -1;
-        onEdge = false;
+        isForward = true;
+        isTraveling = false;
 
         if (ProjectWideConsts.randomSeed == 0)
         {
@@ -102,7 +97,7 @@ public class KillerTCell : MonoBehaviour
         if (currentMode == "Roaming" || currentMode == "AttackRoaming")
         {
             // If not on an edge already, pick an edge and begin traveling it
-            if (!onEdge)
+            if (!isTraveling)
             {
                 int numOfConnectedEdges = 0;
 
@@ -122,9 +117,13 @@ public class KillerTCell : MonoBehaviour
                 if (currentMode == "Roaming") { (isForward, currentNode) = PickRandomConnectedEdge(numOfConnectedEdges); }
 
                 // If attack roaming, pick edge that brings us closest to player
-                if (currentMode == "AttackRoaming") { (isForward, currentEdge) = PickBestConnectedEdge(); }
+                if (currentMode == "AttackRoaming") { (isForward, currentNode) = PickBestConnectedEdge(); }
+
+                currentSegment = currentNode.GetValue();
+                startPoint = ConvertToVector(currentSegment.startPoint);
+                endPoint = ConvertToVector(currentSegment.endPoint);
                 
-                onEdge = true;
+                isTraveling = true;
                 StartCoroutine(TravelEdge(isForward));
             }
         }
@@ -185,9 +184,8 @@ public class KillerTCell : MonoBehaviour
     /*
      * Picks connected edge, minimizing distance from other end to player
      */
-    (bool, int) PickBestConnectedEdge()
+    (bool, Tree<VascularSegment>) PickBestConnectedEdge()
     {
-        int bestEdge = -1;
         float bestDistance = -1f;
         Tree<VascularSegment> bestNode = null;
 
@@ -228,7 +226,7 @@ public class KillerTCell : MonoBehaviour
             }
         }
 
-        return (nextIsForward, bestEdge);
+        return (nextIsForward, bestNode);
     }
 
     /*
@@ -257,13 +255,13 @@ public class KillerTCell : MonoBehaviour
 
             float t = timer / roamTravelTime;
             Vector3 newLocation; 
-            if (isForward) { newLocation = Vector3.Lerp(edges[currentEdge].edge[0], edges[currentEdge].edge[1], t); }
-            else { newLocation = Vector3.Lerp(edges[currentEdge].edge[0], edges[currentEdge].edge[1], 1 - t); }
+            if (isForward) { newLocation = Vector3.Lerp(startPoint, endPoint, t); }
+            else { newLocation = Vector3.Lerp(startPoint, endPoint, 1 - t); }
             transform.localPosition = newLocation;
 
             yield return null;
         }
 
-        onEdge = false;
+        isTraveling = false;
     }
 }
