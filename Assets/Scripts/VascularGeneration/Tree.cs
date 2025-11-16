@@ -1,16 +1,21 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 namespace VascularGenerator.DataStructures
 {
     public class Tree<T> where T : IsCopyable<T>
     {   
-        T value;
-        List<Tree<T>> children;
-        Tree<T> parent;
+        [JsonProperty] public int ID { get; private set; }
+        
+        [JsonProperty] public T value { get; set; }
+
+        [JsonProperty] public List<Tree<T>> children { get; set; } = new List<Tree<T>>();
+
+        [JsonIgnore] public Tree<T> parent { get; set; }
 
         static int IDMaster = 0;
-        int ID;
 
+        
         public Tree(T value)
         {
             this.value = value;
