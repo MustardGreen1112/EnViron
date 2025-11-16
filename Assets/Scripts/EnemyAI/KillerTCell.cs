@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Meta.XR.MRUtilityKit.SceneDecorator;
+using Unity.Collections;
 using UnityEngine;
 using VascularGenerator.DataStructures;
 
@@ -50,18 +51,27 @@ public class KillerTCell : MonoBehaviour
     private int destinationIntersection;
     private int currentEdge;
     private bool onEdge;
+    private bool isForward;
+    Tree<VascularSegment> currentNode;
+    VascularSegment currentSegment;
+    private bool isTraveling;
+    double[] startPoint;
+    double[] endPoint;
 
     private MovementController virusController;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        // Initialize location info
         tree = mapgen.segmentTreeRoot;
-        Tree<VascularSegment> randNode = tree.GetRandomNode();
-        VascularSegment randSegment = randNode.GetValue();
-        double[] startPoint = randSegment.startPoint;
-        double[] endPoint = randSegment.endPoint;
-        double radius = randSegment.radius;
+        currentNode = tree.GetRandomNode();
+        currentSegment = currentNode.GetValue();
+        startPoint = currentSegment.startPoint;
+        endPoint = currentSegment.endPoint;
+        isForward = true;
+
+        transform.SetPositionAndRotation(ConvertToVector(endPoint), transform.rotation);
         
 
         virusController = virus.GetComponent<MovementController>();
@@ -94,10 +104,19 @@ public class KillerTCell : MonoBehaviour
             // If not on an edge already, pick an edge and begin traveling it
             if (!onEdge)
             {
-                bool isForward = false;
+                int numOfConnectedEdges = 0;
 
-                int numOfConnectedEdges = intersections[destinationIntersection].inEdges.Length + 
-                intersections[destinationIntersection].outEdges.Length;
+                // Add 1 to the count to account for going up the parent
+                if (isForward) { numOfConnectedEdges = currentNode.GetChildren().Count + 1; }
+                else 
+                {
+                    // Handle root edge case 
+                    if (currentNode.GetParent() == null) 
+                    { 
+                        numOfConnectedEdges = currentNode.GetParent().GetChildren().Count; 
+                    }
+                    else { numOfConnectedEdges = currentNode.GetParent().GetChildren().Count + 1; }
+                }
 
                 // If regular roaming, pick randomly, with bias away from an edge that we just came from
                 if (currentMode == "Roaming") { (isForward, currentEdge) = PickRandomConnectedEdge(numOfConnectedEdges); }
@@ -119,32 +138,53 @@ public class KillerTCell : MonoBehaviour
     (bool, int) PickRandomConnectedEdge(int numOfConnectedEdges)
     {
         List<int> IDs = new();
+        List<Tree<VascularSegment>> neighbors = new();
 
         // Used to determine whether chosen edge goes forward or backward from current intersection
-        bool isForward = true;
+        bool nextIsForward = true;
         int backEdgesAmt = 0;
 
-        foreach (Edge edge in intersections[destinationIntersection].inEdges) 
+        // foreach (Edge edge in intersections[destinationIntersection].inEdges) 
+        // {
+        //     IDs.Append<int>(edge.ID);
+        //     backEdgesAmt += 1;
+        //     if (edge.ID != currentEdge) { 
+        //         IDs.Append<int>(edge.ID);
+        //         backEdgesAmt += 1;
+        //     }
+        // }
+
+        if (isForward)
         {
-            IDs.Append<int>(edge.ID);
-            backEdgesAmt += 1;
-            if (edge.ID != currentEdge) { 
-                IDs.Append<int>(edge.ID);
-                backEdgesAmt += 1;
+            neighbors.Append(currentNode);
+            foreach (Tree<VascularSegment> neighbor in currentNode.GetChildren())
+            {
+                neighbors.Append(neighbor);
+                neighbors.Append(neighbor);
+            }
+        }
+        else
+        {
+            neighbors.Append(currentNode.parent);
+            neighbors.Append(currentNode.parent);
+            foreach (Tree<VascularSegment> neighbor in currentNode.GetParent().GetChildren())
+            {
+                neighbors.Append(neighbor);
+                if (neighbor == currentNode) { neighbors.Append(neighbor); }
             }
         }
 
-        foreach (Edge edge in intersections[destinationIntersection].outEdges) 
-        {
-            IDs.Append<int>(edge.ID);
-            if (edge.ID != currentEdge) { IDs.Append<int>(edge.ID); }
-        }
+        // foreach (Edge edge in intersections[destinationIntersection].outEdges) 
+        // {
+        //     IDs.Append<int>(edge.ID);
+        //     if (edge.ID != currentEdge) { IDs.Append<int>(edge.ID); }
+        // }
 
         // Used to determine whether chosen edge goes forward or backward from current intersection
         int chosenIndex = rand.Next(IDs.Count);
         if (chosenIndex < backEdgesAmt) { isForward = false; } 
 
-        return (isForward, IDs[chosenIndex]);
+        return (nextIsForward, IDs[chosenIndex]);
     }
 
     /*
@@ -188,6 +228,16 @@ public class KillerTCell : MonoBehaviour
         }
 
         return (isForward, bestEdge);
+    }
+
+    /*
+     * Converts Chase's segment data of floats into a Vector3
+     */
+    Vector3 ConvertToVector(double[] doubles)
+    {
+        float x = (float)doubles[0];
+        float z = (float)doubles[1];
+        return new Vector3(x, 0f, z);
     }
 
     /*
