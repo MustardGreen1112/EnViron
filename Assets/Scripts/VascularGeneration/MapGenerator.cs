@@ -6,8 +6,11 @@ using VascularGenerator.DataStructures;
 public class MapGenerator : MonoBehaviour
 {
     public GameObject buildingBlock;
-    public GameObject parent;
+    GameObject parent;
     float scaler = 10; //scalar for radius
+
+    public Tree<VascularSegment> segmentTreeRoot; //THIS IS THE MAP TREE STRUCTURE!!!!!!
+    public bool LoadFromDummyGraph;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -34,9 +37,20 @@ public class MapGenerator : MonoBehaviour
         
 
         parent = new GameObject("map");
-
-
-        CreateMesh(generator.inletSegment);
+        Tree<VascularSegment> tree;
+        if (LoadFromDummyGraph)
+        {
+            //loading from JSON
+            tree = generator.LoadJSON("Assets/Scripts/VascularGeneration/jsons/dummyGraph.txt");
+            CreateMesh(tree);
+        }
+        else
+        {
+            segmentTreeRoot = generator.inletSegment;
+            CreateMesh(segmentTreeRoot);
+        }
+        
+        
         buildingBlock.SetActive(false);
 
         Debug.Log("---Program Complete---");
