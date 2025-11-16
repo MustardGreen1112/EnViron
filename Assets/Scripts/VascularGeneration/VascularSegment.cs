@@ -1,20 +1,23 @@
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 namespace VascularGenerator.DataStructures
 {
     public class VascularSegment : IsCopyable<VascularSegment>
     {
-        public double[] startPoint;
-        public double[] endPoint;
-        public double segmentLength;
-
-        public double radius;
-        public double flow;
-        public double pressureIn;
-        public double pressureOut;
+        [JsonProperty] public double[] startPoint { get; set; }
+        [JsonProperty] public double[] endPoint { get; set; }
+        [JsonIgnore] public double segmentLength { get; set; }
+        [JsonProperty] public double radius { get; set; }
+        [JsonProperty] public double flow { get; set; }
+        [JsonProperty] public double pressureIn { get; set; }
+        [JsonProperty] public double pressureOut { get; set; }
+        
 
         private double dynamicViscosity = 0.0035;
 
         //constructor that takes all the values and assigns them
+        [JsonConstructor]
         public VascularSegment(double[] startPoint, double[] endPoint, double q, double p1, double p2, double radius)
         {
             this.startPoint = startPoint;

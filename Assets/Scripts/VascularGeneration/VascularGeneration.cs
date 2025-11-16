@@ -10,7 +10,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Transactions;
 using MathNet.Numerics.RootFinding; // for solving the junction pressure when we bifurcate
 using VascularGenerator.DataStructures; //importing our custom tree datastructure
-
+using Newtonsoft.Json;
+using System.IO;
 
 public class VascularGeneration
 {
@@ -28,7 +29,7 @@ public class VascularGeneration
     int numberTerminalSegments;
     int numTerminalPointsCreated;
     private double[] inletLocation;
-    
+
     public Tree<VascularSegment> inletSegment;
 
 
@@ -50,9 +51,29 @@ public class VascularGeneration
         // terminalLocations = GenerateTerminalPoints(perfusionRadius, numberTerminalSegments); //terminal location is a list of random uniformly distributed points within the perfusion area
 
         inletSegment = GenerateVascularTree(inletLocation, terminalPressure, inletFlow, inletPressure);
+
+        // //storing JSON
+        // StoreJSON(inletSegment, "Jsons/testJSON.txt");
+
+        // //loading from JSON
+        // LoadJSON("Jsons/dummyGraph.txt");
         
     }
 
+    // method stores a json of the inputted tree
+    public void StoreJSON(Tree<VascularSegment> tree, string filepath)
+    {
+        string json = JsonConvert.SerializeObject(tree, Formatting.Indented);
+        File.WriteAllText(filepath, json);
+    }
+
+    //given a filepath of a json, this will load in the json and return it as a Tree<VascularSegment> 
+    public Tree<VascularSegment> LoadJSON(string filepath)
+    {
+        string json = System.IO.File.ReadAllText(filepath);
+        Tree<VascularSegment> treeRoot = JsonConvert.DeserializeObject<Tree<VascularSegment>>(json);
+        return treeRoot;
+    }
 
     private Tree<VascularSegment> GenerateVascularTree(double[] inletLocation, double terminalPressure, double inletFlow, double inletPressure)
     {
