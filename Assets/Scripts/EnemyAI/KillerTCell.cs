@@ -56,6 +56,8 @@ public class KillerTCell : MonoBehaviour
 
     private MovementController virusController;
 
+    //testing vars
+    bool aggroed;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -77,7 +79,7 @@ public class KillerTCell : MonoBehaviour
         isForward = true;
         isTraveling = false;
 
-        chaseMovementPerFrame = chaseSpeed/Time.fixedDeltaTime;
+        chaseMovementPerFrame = chaseSpeed*Time.deltaTime;
 
         if (ProjectWideConsts.randomSeed == -1)
         {
@@ -87,23 +89,27 @@ public class KillerTCell : MonoBehaviour
         {
             rand = new System.Random(ProjectWideConsts.randomSeed + randomModifier);
         }
+        aggroed = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        passedTime += Time.fixedDeltaTime;
+        passedTime += Time.deltaTime;
 
         // Virus vision check
         if (currentMode != "Return")
         {
             RaycastHit hitInfo = new();
-            if (Physics.Linecast(transform.position, virus.transform.position, out hitInfo))
+            int layerMask = ~(3); // all except 3 (virus layer)
+            if (Physics.Linecast(transform.position, virus.transform.position, out hitInfo, layerMask))
             {
                 if (hitInfo.collider.transform.CompareTag("Player")) 
                 { 
                     currentMode = "Attack";
                     passedTime = 0f; 
+                    if (!aggroed) {print("aggroed");}
+                    aggroed = true;
                 }
             }
         }
@@ -114,6 +120,8 @@ public class KillerTCell : MonoBehaviour
             currentMode = "Roaming";
             transform.position = endPoint;
             isForward = true;
+            print("calmed down");
+            aggroed = false;
         }
 
         if (currentMode == "Roaming" || currentMode == "AttackRoaming")
@@ -147,7 +155,7 @@ public class KillerTCell : MonoBehaviour
         if (currentMode == "Attack")
         {
             transform.LookAt(virus.transform);
-            transform.Translate(chaseMovementPerFrame * Vector3.forward);
+            transform.Translate(chaseMovementPerFrame * transform.forward);
         }
     }
 
@@ -232,6 +240,16 @@ public class KillerTCell : MonoBehaviour
         }
         else // if at the start of a segment
         {
+            // Special case if no parent (root)
+            if (currentNode.GetParent() == null)
+            {
+                bestNode = currentNode;
+                bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().endPoint), virus.transform.position);
+                nextIsForward = true;
+            }
+            
+            else 
+            {
             // Special case for the first neighbor checked (parent)
             bestNode = currentNode.GetParent();
             bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().startPoint), virus.transform.position);
@@ -245,6 +263,7 @@ public class KillerTCell : MonoBehaviour
                     bestDistance = candidateDistance;
                     nextIsForward = true;
                 }
+            }
             }
         }
 

@@ -12662,10 +12662,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6769e1a7172e6c24682f9c5996db6803, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillerTCell
-  detectionRadius: 5
+  detectionRadius: 15
   chaseSpeed: 5
   returnSpeed: 2.5
-  maxTimeNoLOS: 2
+  maxTimeNoLOS: 5
   roamTravelTime: 4
   randomModifier: 0
   virus: {fileID: 903061380}
