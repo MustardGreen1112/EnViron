@@ -10,15 +10,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 3ed12c5777f90d34fab092200fa1681e, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.2
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3ed12c5777f90d34fab092200fa1681e, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.2
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3ed12c5777f90d34fab092200fa1681e, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.2
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3ed12c5777f90d34fab092200fa1681e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -70,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 29d67a6d1d2cc0149a4fe7f16bcc545d, type: 2}
     - target: {fileID: 919132149155446097, guid: 3ed12c5777f90d34fab092200fa1681e, type: 3}
       propertyPath: m_Name
-      value: vein_cell
+      value: kidney_1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

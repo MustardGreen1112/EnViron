@@ -41,7 +41,7 @@ public class MapGeneratorEditor : EditorWindow
     }
 
 
-    // Input parameters. 
+    // Input parameters.  
     [Header("This is the name of the json file we read from. The json should be stored in Scripts/VascularGeneration/jsons")]
     [SerializeField] private string treeJsonName;
     [SerializeField] private string splinesJsonName;
@@ -50,6 +50,8 @@ public class MapGeneratorEditor : EditorWindow
     [SerializeField] private Noise sectionNoise;
     [SerializeField] private Noise cellNoise;
     [SerializeField] private Cell[] cells;
+    [SerializeField] private int sectionDensity = 10;
+    [SerializeField] private int seed = 42;
     private const string EditorPrefsKey = "MapGeneratorKey";
 
     // Shown on GUI of editor window.
@@ -74,6 +76,9 @@ public class MapGeneratorEditor : EditorWindow
         EditorGUILayout.PropertyField(sectionNoise, new GUIContent("Section Noise"), true);
         EditorGUILayout.PropertyField(cellNoise, new GUIContent("Cell Noise"), true);
 
+        sectionDensity = EditorGUILayout.IntField("Section Density", sectionDensity);
+        seed = EditorGUILayout.IntField("Random Seed", seed);
+
         if (GUILayout.Button("Generate Map"))
         {
             _inletSegments = LoadVascularTreeFromJson();
@@ -95,19 +100,19 @@ public class MapGeneratorEditor : EditorWindow
 
         if (GUILayout.Button("Load Curves"))
         {
-            Dictionary<int, CatmullRomSpline> loadedCurves = LoadCurveDictionary(treeJsonName.stringValue);
+            catmullSplineDictionary = LoadCurveDictionary(treeJsonName.stringValue);
 
-            if (loadedCurves.Count > 0)
+            if (catmullSplineDictionary.Count > 0)
             {
-                Debug.Log($"Successfully loaded {loadedCurves.Count} curves");
+                Debug.Log($"Successfully loaded {catmullSplineDictionary.Count} curves");
 
                 // Example: visualize loaded curves
-                foreach (var kvp in loadedCurves)
+                foreach (var kvp in catmullSplineDictionary)
                 {
                     Debug.Log($"Curve ID: {kvp.Key}, Points: {kvp.Value.GetPoints().Length}");
                 }
             }
-            VisualizeSpline(loadedCurves);
+            VisualizeSpline(catmullSplineDictionary);
         }
 
         if(GUILayout.Button("Generate cells!"))
@@ -126,23 +131,78 @@ public class MapGeneratorEditor : EditorWindow
         sectionNoise.noise = GenerateNoiseTexture(sectionNoise.noiseSize, true);
         cellNoise.noise = GenerateNoiseTexture(cellNoise.noiseSize, true);
         Debug.Log("Generating cells...");
-        foreach(int id in catmullSplineDictionary.Keys)
+        GameObject parent = new GameObject("Tunnels");
+        foreach (int id in catmullSplineDictionary.Keys)
         {
             CatmullRomSpline catspline = catmullSplineDictionary[id];
-            GenerateCells(catspline, id);
+            GenerateCells(catspline, id, parent.transform);
         }
     }
 
-    void GenerateCells(CatmullRomSpline spline, int id)
+    void GenerateCells(CatmullRomSpline spline, int id, Transform parent)
     {
         Cell cell = Array.Find(cells, obj => obj.cellName == spline.GetTag());
+        if(cell == null) { 
+            Debug.Log("Can't find the cell called " + spline.GetTag() + " using default instead");
+            cell = cells[0];
+        }
+        var frames = spline.BuildFrames();
+        float[] arcLengthTable = spline.ComputeArcLengthTable(200);
+        float totalLength = spline.GetTotalArcLength(arcLengthTable);
+
+        GameObject tunnel = new GameObject("Tunnel_" + id + spline.GetTag());
+        tunnel.transform.SetParent(parent);
+        float w0 = cell.cell.weight;
+        float w1 = w0 + cell.cell_variant.weight;
+        float w2 = w1 + cell.cell_variant_1.weight;
+        for (int k = 0; k < sectionDensity * spline.GetSegmentCount(); k++)
+        {
+            int SegmentCount = spline.GetSegmentCount();
+            float length = UnityEngine.Random.value * totalLength; // uniform value along spline length
+            float t = spline.ArcLengthToT(arcLengthTable, length);
+            Vector3 N, B; float radius;
+            spline.SampleFrame(frames, t, out N, out B, out radius);
+            radius *= 15.0f;
+            Debug.Log("radius is " + radius);
+            Vector3 P = spline.Eval(t);
+            Vector3 T = spline.EvalTangent(t);
+            // Sample offset direction
+            float theta = UnityEngine.Random.value * 2f * Mathf.PI;
+            Vector3 offset = Mathf.Cos(theta) * N + Mathf.Sin(theta) * B;
+            // Sample point based on noise texture
+            Color p = sectionNoise.noise.GetPixel(k / 2, k % 2);
+            float d = Mathf.Max(p.g * Mathf.Sqrt(sectionNoise.noiseVariation) + radius, sectionNoise.minValue); // Map to [min_radius, mean + variation]
+            Vector3 finalPos = P + offset * d;
+            // Sample cell prefab based on weights.
+            float rw = UnityEngine.Random.value;
+            GameObject cellPrefab = rw < w0 ? cell.cell.prefab :
+                                 (rw < w1 ? cell.cell_variant.prefab : cell.cell_variant_1.prefab);
+            // Set cell size. 
+            float cellSize;
+            if (k % 2 == 0) cellSize = cellNoise.noise.GetPixel((k + seed) % cellNoise.noiseSize, k % cellNoise.noiseSize).r;
+            else cellSize = cellNoise.noise.GetPixel((k + seed) % cellNoise.noiseSize, k % cellNoise.noiseSize).g;
+            cellSize = Mathf.Max(cellNoise.minValue, cellSize * cellNoise.noiseVariation);
+
+            // Generate prefab. 
+            GameObject cellInstance = (GameObject)PrefabUtility.InstantiatePrefab(cellPrefab);
+            cellInstance.transform.position = finalPos;
+            cellInstance.transform.parent = tunnel.transform;
+            cellInstance.transform.localScale *= cellSize;
+
+            // Set rotation
+            Quaternion rotation = Quaternion.LookRotation(N);
+            cellInstance.transform.rotation = rotation;
+            cellInstance.name = cell.cellName + "_" + (k).ToString();
+        }
     }
 
     void VisualizeSpline(Dictionary<int, CatmullRomSpline> catmullSplineDictionary)
     {
+        GameObject parent = new GameObject("Splines");
         foreach (int id in catmullSplineDictionary.Keys)
         {
             GameObject spline = new GameObject("Spline_" + id);
+            spline.transform.SetParent(parent.transform);
             var catSpline = catmullSplineDictionary[id];
             MonoCatSpline monospline = spline.AddComponent<MonoCatSpline>();
             monospline.spline = catSpline;
@@ -400,6 +460,7 @@ public class MapGeneratorEditor : EditorWindow
         Stack<KeyValuePair<Tree<VascularSegment>, int>> nodesContainsChildren,
         List<VascularSegment> splinePoints, List<List<VascularSegment>> splines)
     {
+        if(inletSegments.tag != "") { inletSegments.value.tag = inletSegments.tag; }
         if (inletSegments.IsLeaf())
         {
             // If you reach a leaf, add the point to the current spline points list, go back to previous bifurcation nodes, 

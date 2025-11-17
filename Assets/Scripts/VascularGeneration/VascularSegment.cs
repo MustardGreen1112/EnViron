@@ -17,6 +17,7 @@ namespace VascularGenerator.DataStructures
         private double dynamicViscosity = 0.0035;
 
         public int curveID;
+        public string tag;
 
 
         //constructor that takes all the values and assigns them

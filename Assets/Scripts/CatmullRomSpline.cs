@@ -123,6 +123,9 @@ public class CatmullRomSpline
         dir_forward = dir_forward.normalized;
         points[segCount + 2] = new Vector3((float)segments[segCount - 1].endPoint[0], 0.0f, (float)segments[segCount - 1].endPoint[1]) + 0.1f * dir_forward;
         radius[segCount + 2] = (float)segments[segCount - 1].radius;
+        List<string> tags = segments.Select(p => p.tag).ToList();
+        try { tag = tags.First(p => p != ""); }
+        catch (ArgumentNullException exception) { tag = ""; }
         segmentCount = points.Length - 3;
         alpha = 0.5f;
         this.curveID = curveID;
@@ -138,6 +141,54 @@ public class CatmullRomSpline
         this.radius = radius;
     }
 
+    public float[] ComputeArcLengthTable(int samples = 100)
+    {
+        float[] arcLengths = new float[samples + 1];
+        arcLengths[0] = 0f;
+
+        Vector3 prevPoint = Eval(0);
+        float totalLength = 0f;
+
+        for (int i = 1; i <= samples; i++)
+        {
+            float t = i / (float)samples;
+            Vector3 currentPoint = Eval(t);
+            totalLength += Vector3.Distance(prevPoint, currentPoint);
+            arcLengths[i] = totalLength;
+            prevPoint = currentPoint;
+        }
+
+        return arcLengths;
+    }
+
+    // Convert from arc length to t parameter
+    public float ArcLengthToT(float[] arcLengthTable, float targetLength)
+    {
+        int samples = arcLengthTable.Length - 1;
+        float totalLength = arcLengthTable[samples];
+
+        // Clamp target length
+        targetLength = Mathf.Clamp(targetLength, 0f, totalLength);
+
+        // Find the two samples that bracket the target length
+        for (int i = 0; i < samples; i++)
+        {
+            if (arcLengthTable[i + 1] >= targetLength)
+            {
+                // Interpolate between i and i+1
+                float segmentLength = arcLengthTable[i + 1] - arcLengthTable[i];
+                float localT = (targetLength - arcLengthTable[i]) / segmentLength;
+                return (i + localT) / samples;
+            }
+        }
+
+        return 1f; // End of curve
+    }
+
+    public float GetTotalArcLength(float[] arcLengthTable)
+    {
+        return arcLengthTable[arcLengthTable.Length - 1];
+    }
 
     Vector3 GetPoint(int i)
     {
@@ -150,14 +201,15 @@ public class CatmullRomSpline
     }
     public Vector3 Eval(float t)
     {
-        int n = Mathf.FloorToInt(t * segmentCount);
-        t -= (t * n);
+        int n = Mathf.Clamp(Mathf.FloorToInt(t * segmentCount), 0, segmentCount-1);
+        t = (t * segmentCount) - n;
         return Eval(n, t);
     }
     public Vector3 EvalTangent(float t)
     {
-        int n = Mathf.FloorToInt(t * segmentCount);
-        t -= (t * n);
+        int n = Mathf.Clamp(Mathf.FloorToInt(t * segmentCount), 0, segmentCount-1);
+        t = (t * segmentCount) - n;
+        //Debug.Log("n is " + n + " , t is " + t);
         return EvalTangent(n, t);
     }
     private Vector3 Eval(int seg, float t) => GetCurve(seg).GetPoint(t);
@@ -243,7 +295,11 @@ public class CatmullRomSpline
 
                 frames.normals[index] = N;
                 frames.binormals[index] = B;
-                frames.radius[index] = Mathf.Lerp(radius[index], index + 1 >= points.Length ? radius[index] : radius[index + 1], t);
+                //Debug.Log("index is " + index);
+                //Debug.Log("total length is " + radius.Length);
+                int radiusIndex = seg + 1; // Current segment's start control point
+                float radiusT = t; // Use the same t parameter for radius interpolation
+                frames.radius[index] = Mathf.Lerp(radius[radiusIndex], radius[radiusIndex + 1], radiusT);
 
                 prevT = T;
                 prevN = N;
