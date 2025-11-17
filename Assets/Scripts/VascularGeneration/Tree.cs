@@ -15,6 +15,7 @@ namespace VascularGenerator.DataStructures
 
         static int IDMaster = 0;
         [JsonProperty] public bool isKey = false;
+        [JsonProperty] public string tag = "";
 
         public Tree(T value)
         {

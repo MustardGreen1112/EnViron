@@ -9,6 +9,7 @@ public class MapGenerator : MonoBehaviour
 {
     public List<string> respawnCellTypes;
     public GameObject keyPointMarker;
+    public bool markKeySegments;
     public Material keyMaterial;
     public GameObject buildingBlock;
     public Material buildingBlockMaterial;
@@ -61,10 +62,6 @@ public class MapGenerator : MonoBehaviour
         else
         {
             segmentTreeRoot = generator.inletSegment;
-            if (storeGraphGenerated)
-            {
-                generator.StoreJSON(segmentTreeRoot, "Assets/Scripts/VascularGeneration/jsons/"+OVERWRITE_JSONStorageName+".txt");
-            }
         }
         
         
@@ -73,22 +70,61 @@ public class MapGenerator : MonoBehaviour
 
 
         //now we get a list of the nodes that will be brain + respawn nodes
-        List<Tree<VascularSegment>> keyNodes = GetKeyNodes(respawnCellTypes, (int)(perfusionRadius/(4*(respawnCellTypes.Count+1))));
+        int keyNodeExclusionRadius = (int)(perfusionRadius/(2*(respawnCellTypes.Count+1)));
+        List<Tree<VascularSegment>> keyNodes = GetKeyNodes(respawnCellTypes, keyNodeExclusionRadius);
         
         if (keyNodes != null)
         {
+            //marking each key node with a tag 
+            List<string> tags = new() { "brain" };
+            foreach (string s in respawnCellTypes){tags.Add(s);}
+
             foreach(Tree<VascularSegment> node in keyNodes)
             {
+                string tag = tags[0];
+                tags.RemoveAt(0);
                 node.isKey = true;
-                // GameObject marker = Instantiate(keyPointMarker, new Vector3((float)node.GetValue().GetMidpoint()[0], 0, (float)node.GetValue().GetMidpoint()[1]), Quaternion.identity);
+                node.tag = tag;
+
+                Vector3 startPoint = new Vector3((float)node.GetValue().startPoint[0], 0, (float)node.GetValue().startPoint[1]);
+                Vector3 endPoint = new Vector3((float)node.GetValue().endPoint[0], 0, (float)node.GetValue().endPoint[1]);
+                GameObject marker = Instantiate(keyPointMarker, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
+                marker.transform.localScale = new Vector3(5,5,5);
+            }
+
+            //marking any nodes within the influenceRadius (defined by keyNodeExclusionRadius) of each key node with said node's tag
+            double influenceRadius = keyNodeExclusionRadius;
+            List<Tree<VascularSegment>> toVisit = new(){segmentTreeRoot};
+            while(toVisit.Count > 0)
+            {
+                Tree<VascularSegment> current = toVisit[0];
+                toVisit.RemoveAt(0);
+                //checking to see if this node is within  the influence raidus
+                foreach (Tree<VascularSegment> keyNode in keyNodes)
+                {
+                    // double[] currentMidpoint = current.GetValue().GetMidpoint();
+                    double[] currentStartPoint = current.GetValue().startPoint;
+                    double[] currentEndPoint = current.GetValue().endPoint;
+                    
+                    double[] keyMidpoint = keyNode.GetValue().GetMidpoint();
+                    
+                    double startPointDistanceSquared = Math.Pow(currentStartPoint[0]-keyMidpoint[0], 2) + Math.Pow(currentStartPoint[1]-keyMidpoint[1], 2);
+                    double endPointDistanceSquared = Math.Pow(currentEndPoint[0]-keyMidpoint[0], 2) + Math.Pow(currentEndPoint[1]-keyMidpoint[1], 2);
+
+                    if ( startPointDistanceSquared < Math.Pow(influenceRadius, 2) || endPointDistanceSquared < Math.Pow(influenceRadius, 2) )
+                    {
+                        current.tag = keyNode.tag;
+                    }
+                }
+                //adding children to the queue
+                if (current.GetChildren().Count ==0){continue;}
+                foreach (Tree<VascularSegment> c in current.GetChildren()){toVisit.Add(c);}
             }
         }
-        else
-        {
-            Debug.Log("was null");
-        }
 
-        if (storeGraphGenerated)
+
+        //storing the generated graph if so directed
+        if (storeGraphGenerated && !LoadFromDummyGraph)
         {
             generator.StoreJSON(segmentTreeRoot, "Assets/Scripts/VascularGeneration/jsons/"+OVERWRITE_JSONStorageName+".txt");
         }
@@ -136,10 +172,14 @@ public class MapGenerator : MonoBehaviour
             {
                 segment.GetComponent<Renderer>().material = buildingBlockMaterial;
             }
-            if (currentSegment.isKey)
+            
+
+            if (currentSegment.tag!="" && markKeySegments)
             {
                 segment.GetComponent<Renderer>().material = keyMaterial;
             }
+
+
             //adding the children to the queue
             if(currentSegment.GetChildren().Count==0){continue;}
             foreach (Tree<VascularSegment> c in currentSegment.GetChildren()){toVisit.Add(c);}
