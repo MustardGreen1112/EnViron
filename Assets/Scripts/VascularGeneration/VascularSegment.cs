@@ -16,6 +16,9 @@ namespace VascularGenerator.DataStructures
 
         private double dynamicViscosity = 0.0035;
 
+        public int curveID;
+
+
         //constructor that takes all the values and assigns them
         [JsonConstructor]
         public VascularSegment(double[] startPoint, double[] endPoint, double q, double p1, double p2, double radius)
