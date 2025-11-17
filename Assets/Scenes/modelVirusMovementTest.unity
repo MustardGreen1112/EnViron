@@ -1576,6 +1576,17 @@ SkinnedMeshRenderer:
     m_Center: {x: 0.00616638, y: -0.029108923, z: -0.018820617}
     m_Extent: {x: 0.033926036, y: 0.042694185, z: 0.05639166}
   m_DirtyAABB: 0
+--- !u!114 &286853331 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8002289464278121321, guid: 3246754291186b44099acfbff51cee09, type: 3}
+  m_PrefabInstance: {fileID: 2105990313}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73fdd1a43a335e74d9f6dca550d1ece1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VirusGenController
 --- !u!1 &320289862
 GameObject:
   m_ObjectHideFlags: 0
@@ -2002,15 +2013,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 908df24cff0f4794c9e8b12e9574a5e5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -13.61
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 908df24cff0f4794c9e8b12e9574a5e5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 908df24cff0f4794c9e8b12e9574a5e5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 26.64
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 908df24cff0f4794c9e8b12e9574a5e5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2741,6 +2752,17 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.009029879, y: -0.064930744, z: -0.06743039}
     m_Extent: {x: 0.0043483684, y: 0.0068749115, z: 0.006839171}
   m_DirtyAABB: 0
+--- !u!114 &406251393 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8002289464278121321, guid: 3246754291186b44099acfbff51cee09, type: 3}
+  m_PrefabInstance: {fileID: 8571195150795762634}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73fdd1a43a335e74d9f6dca550d1ece1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VirusGenController
 --- !u!1 &429606775
 GameObject:
   m_ObjectHideFlags: 0
@@ -10459,6 +10481,54 @@ Transform:
   - {fileID: 1199276070}
   m_Father: {fileID: 1831717131}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &642190759
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 642190761}
+  - component: {fileID: 642190760}
+  m_Layer: 0
+  m_Name: RespawnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &642190760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642190759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f5db9a4a75dfd74192a8266560149da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RespawnManager
+  respawnPointControls:
+  - {fileID: 406251393}
+  - {fileID: 286853331}
+  virusController: {fileID: 903061384}
+--- !u!4 &642190761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 642190759}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.68172, y: 2.30831, z: -1.72875}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &644243367
 GameObject:
   m_ObjectHideFlags: 0
@@ -11382,9 +11452,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54cbf54a76d313241a49bb2fdb2350a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MapGenerator
+  respawnCellTypes: []
+  keyPointMarker: {fileID: 685107115}
+  markKeySegments: 0
+  keyMaterial: {fileID: 0}
   buildingBlock: {fileID: 685107115}
+  buildingBlockMaterial: {fileID: 0}
   useVolumeOptimization: 0
-  LoadFromDummyGraph: 0
+  LoadFromDummyGraph: 1
   loadJSON_name: dummyGraph
   storeGraphGenerated: 0
   OVERWRITE_JSONStorageName: 
@@ -12311,6 +12386,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovementController
   modelVirus: {fileID: 803503899}
+  respawnManagerObject: {fileID: 642190759}
   movementScalar: 10
   releaseLinDamping: 0.7
   isNearWall: 0
@@ -12677,7 +12753,7 @@ GameObject:
   - component: {fileID: 997485351}
   m_Layer: 0
   m_Name: killerTcell
-  m_TagString: Untagged
+  m_TagString: killerT
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -20937,3 +21013,4 @@ SceneRoots:
   - {fileID: 812034983}
   - {fileID: 685107119}
   - {fileID: 1901496224}
+  - {fileID: 642190761}

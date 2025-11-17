@@ -13,6 +13,7 @@ public class MovementController : MonoBehaviour
 {
     /* Params (editable from inspector) */
     [SerializeField] private GameObject modelVirus;
+    [SerializeField] private GameObject respawnManagerObject;
     [SerializeField] private float movementScalar = 13f;
     [SerializeField] private float releaseLinDamping = 0.7f;  
 
@@ -26,11 +27,13 @@ public class MovementController : MonoBehaviour
     public int antibodiesAttached;
 
     private ModelVirusController modelVirusController;
+    private RespawnManager respawnManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         modelVirusController = modelVirus.GetComponent<ModelVirusController>();
+        respawnManager = respawnManagerObject.GetComponent<RespawnManager>();
         rigid = GetComponent<Rigidbody>();
 
         isNearWall = false;
@@ -58,6 +61,23 @@ public class MovementController : MonoBehaviour
             Vector3 displacement = modelVirusController.GetDisplacement();
             rigid.AddForce(displacement * movementScalar, ForceMode.Acceleration);
         }
+    }
+
+    // OnTriggerEnter is called when this object's Collider overlaps with another Collider,
+    // at least one of them being set to trigger
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("killerT")) { respawnManager.PlayerKilled(); }
+    }
+
+    /*
+     * Given spawn location vector, moves player there, briefly making virus kinematic to avoid issues
+     */
+    public void Respawn(Vector3 spawnLocation)
+    {
+        rigid.isKinematic = true;
+        rigid.position = spawnLocation;
+        rigid.isKinematic = false;
     }
 
     /* Setters/getters */
