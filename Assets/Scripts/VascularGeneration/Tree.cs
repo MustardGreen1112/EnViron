@@ -113,7 +113,7 @@ namespace VascularGenerator.DataStructures
         //returns the number of nodes in the tree
         public int GetNumberOfNodes()
         {
-            if (this.children.Count > 0)
+            if (this.children.Count == 0)
             {
                 return 1;
             }
