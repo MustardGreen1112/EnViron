@@ -15,6 +15,8 @@ namespace VascularGenerator.DataStructures
 
         static int IDMaster = 0;
 
+        public bool visited = false;
+
         
         public Tree(T value)
         {
