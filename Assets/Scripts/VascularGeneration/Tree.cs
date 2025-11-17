@@ -17,6 +17,8 @@ namespace VascularGenerator.DataStructures
         [JsonProperty] public bool isKey = false;
         [JsonProperty] public string tag = "";
 
+        public bool visited = false;
+
         public Tree(T value)
         {
             this.value = value;
