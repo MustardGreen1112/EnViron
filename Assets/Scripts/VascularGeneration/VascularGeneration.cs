@@ -72,6 +72,23 @@ public class VascularGeneration
     {
         string json = System.IO.File.ReadAllText(filepath);
         Tree<VascularSegment> treeRoot = JsonConvert.DeserializeObject<Tree<VascularSegment>>(json);
+
+        List<Tree<VascularSegment>> toVisit = new(){treeRoot};
+        while(toVisit.Count > 0)
+        {
+            Tree<VascularSegment> current = toVisit[0];
+            toVisit.RemoveAt(0);
+            
+            if (current.GetChildren().Count > 0)
+            {
+                foreach (Tree<VascularSegment> child in current.GetChildren())
+                {
+                    child.parent = current;
+                    toVisit.Add(child);
+                }
+            }
+        }
+
         return treeRoot;
     }
 
