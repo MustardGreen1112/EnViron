@@ -29,6 +29,8 @@ public class KillerTCell : MonoBehaviour
     [SerializeField] float maxTimeNoLOS = 3f; // in seconds
     [SerializeField] float roamTravelTimeScale = 0.2f; // for every 1 unit between the two points of a segment, the travel time increases by this amount
     [SerializeField] int randomModifier = 0; // added to random seed; allows individual predictable randomness
+
+    /* External object references */
     [SerializeField] GameObject virus;
     [SerializeField] GameObject virusVisibleBox;
 
