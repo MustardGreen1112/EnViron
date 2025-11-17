@@ -25,7 +25,7 @@ public class MapGenerator : MonoBehaviour
 
         // Constants for realistic microvascular scale
         double perfusionRadius = 100;                // in pixels (1 px = 1 cm → 1 m radius domain)
-        int numberTerminalSegments = 100;
+        int numberTerminalSegments = 10;
         double terminalPressure = 20;               // 60 mmHg in Pascals
         double inletPressure = 400;                 // 100 mmHg in Pascals
         double inletFlow = 1000;                     // 500 μL/min in m³/s (approximate)

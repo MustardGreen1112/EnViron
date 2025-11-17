@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Meta.XR.MRUtilityKit.SceneDecorator;
+using NUnit.Framework;
 using Unity.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using VascularGenerator.DataStructures;
 
@@ -26,28 +28,25 @@ using VascularGenerator.DataStructures;
 public class KillerTCell : MonoBehaviour
 {
     /* Params (editable from inspector) */
-    [SerializeField] float chaseSpeed = 5f;
+    [SerializeField] float detectionRadius = 5f;
+    [SerializeField] float chaseSpeed = 5f; // speeds in units per seocnd
     [SerializeField] float returnSpeed = 2.5f;
     [SerializeField] float maxTimeNoLOS = 2f; // in seconds
     [SerializeField] float roamTravelTime = 4f;
-    [SerializeField] int startingIntersection = 0;
     [SerializeField] int randomModifier = 0; // added to random seed; allows individual predictable randomness
     [SerializeField] GameObject virus;
 
-    /* External information (passed at start) */
-    [SerializeField] Intersection[] intersections; // replace with database of intersections here
-    [SerializeField] Edge[] edges; // replace with database of curves here
-    // include setters for both of these somewhere in the code below
+    // Map info
     public MapGenerator mapgen;
-    private Tree<VascularSegment> tree;
 
     /* Internal variables */
     private string currentMode;
-    private int antibodiesAttachedToVirus;
     private float passedTime;
     private System.Random rand;
+    private float chaseMovementPerFrame;
 
     // Navigation variables
+    private Tree<VascularSegment> tree;
     private bool isForward;
     Tree<VascularSegment> currentNode;
     VascularSegment currentSegment;
@@ -67,19 +66,20 @@ public class KillerTCell : MonoBehaviour
         startPoint = ConvertToVector(currentSegment.startPoint);
         endPoint = ConvertToVector(currentSegment.endPoint);
 
-        transform.SetPositionAndRotation(endPoint, transform.rotation);
+        transform.position = endPoint;
         
 
         virusController = virus.GetComponent<MovementController>();
 
         currentMode = "Roaming";
-        antibodiesAttachedToVirus = 0;
         passedTime = 0;
 
         isForward = true;
         isTraveling = false;
 
-        if (ProjectWideConsts.randomSeed == 0)
+        chaseMovementPerFrame = chaseSpeed/Time.fixedDeltaTime;
+
+        if (ProjectWideConsts.randomSeed == -1)
         {
             rand = new System.Random();
         } 
@@ -92,29 +92,45 @@ public class KillerTCell : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        passedTime += Time.fixedDeltaTime;
 
+        // Virus vision check
+        if (currentMode != "Return")
+        {
+            RaycastHit hitInfo = new();
+            if (Physics.Linecast(transform.position, virus.transform.position, out hitInfo))
+            {
+                if (hitInfo.collider.transform.CompareTag("Player")) 
+                { 
+                    currentMode = "Attack";
+                    passedTime = 0f; 
+                }
+            }
+        }
+
+        // Reset to Roaming if virus hasn't been seen in awhile
+        if (currentMode == "Attack" && passedTime > maxTimeNoLOS) 
+        { 
+            currentMode = "Roaming";
+            transform.position = endPoint;
+            isForward = true;
+        }
 
         if (currentMode == "Roaming" || currentMode == "AttackRoaming")
         {
+            // If virus is within detection radius (increases with number of antibodies),
+            // move to AttackRoaming mode
+            float adjustedRadius = (1 + virusController.GetAntibodiesAttached()) * detectionRadius;
+            bool isClose = Vector3.Distance(transform.position, virus.transform.position) < (1 + adjustedRadius);
+
+            if (isClose) { currentMode = "AttackRoaming"; }
+            else { currentMode = "Roaming"; }
+
             // If not on an edge already, pick an edge and begin traveling it
             if (!isTraveling)
             {
-                int numOfConnectedEdges = 0;
-
-                // Add 1 to the count to account for going up the parent
-                if (isForward) { numOfConnectedEdges = currentNode.GetChildren().Count + 1; }
-                else 
-                {
-                    // Handle root edge case 
-                    if (currentNode.GetParent() == null) 
-                    { 
-                        numOfConnectedEdges = currentNode.GetParent().GetChildren().Count; 
-                    }
-                    else { numOfConnectedEdges = currentNode.GetParent().GetChildren().Count + 1; }
-                }
-
                 // If regular roaming, pick randomly, with bias away from an edge that we just came from
-                if (currentMode == "Roaming") { (isForward, currentNode) = PickRandomConnectedEdge(numOfConnectedEdges); }
+                if (currentMode == "Roaming") { (isForward, currentNode) = PickRandomConnectedEdge(); }
 
                 // If attack roaming, pick edge that brings us closest to player
                 if (currentMode == "AttackRoaming") { (isForward, currentNode) = PickBestConnectedEdge(); }
@@ -127,6 +143,12 @@ public class KillerTCell : MonoBehaviour
                 StartCoroutine(TravelEdge(isForward));
             }
         }
+
+        if (currentMode == "Attack")
+        {
+            transform.LookAt(virus.transform);
+            transform.Translate(chaseMovementPerFrame * Vector3.forward);
+        }
     }
 
     /* Helper functions */
@@ -134,7 +156,7 @@ public class KillerTCell : MonoBehaviour
     /*
      * Picks connected edge semi-randomly (weighted against picking current edge)
      */
-    (bool, Tree<VascularSegment>) PickRandomConnectedEdge(int numOfConnectedEdges)
+    (bool, Tree<VascularSegment>) PickRandomConnectedEdge()
     {
         List<Tree<VascularSegment>> neighbors = new();
 
@@ -143,29 +165,29 @@ public class KillerTCell : MonoBehaviour
 
         if (isForward) // if at the end of a segment
         {
-            neighbors.Append(currentNode);
+            neighbors.Add(currentNode);
             foreach (Tree<VascularSegment> neighbor in currentNode.GetChildren())
             {
-                neighbors.Append(neighbor);
-                neighbors.Append(neighbor);
+                neighbors.Add(neighbor);
+                neighbors.Add(neighbor);
             }
         }
         else // if at the start of a segment
         {
-            if (currentNode.parent == null) {}
+            if (currentNode.parent == null) { neighbors.Add(currentNode); }
             else 
             {
-            neighbors.Append(currentNode.parent);
-            neighbors.Append(currentNode.parent);
+            neighbors.Add(currentNode.parent);
+            neighbors.Add(currentNode.parent);
             foreach (Tree<VascularSegment> neighbor in currentNode.GetParent().GetChildren())
             {
-                neighbors.Append(neighbor);
-                if (neighbor == currentNode) { neighbors.Append(neighbor); }
+                neighbors.Add(neighbor);
+                if (neighbor != currentNode) { neighbors.Add(neighbor); }
             }
             }
         }
 
-        int chosenIndex = rand.Next(numOfConnectedEdges);
+        int chosenIndex = rand.Next(neighbors.Count);
         Tree<VascularSegment> nextNode = neighbors[chosenIndex];
 
         // Used to determine whether chosen edge goes forward or backward from current intersection
