@@ -14,8 +14,8 @@ namespace VascularGenerator.DataStructures
         [JsonIgnore] public Tree<T> parent { get; set; }
 
         static int IDMaster = 0;
+        [JsonProperty] public bool isKey = false;
 
-        
         public Tree(T value)
         {
             this.value = value;
@@ -111,7 +111,7 @@ namespace VascularGenerator.DataStructures
         //returns the number of nodes in the tree
         public int GetNumberOfNodes()
         {
-            if (this.children.Count > 0)
+            if (this.children.Count == 0)
             {
                 return 1;
             }
@@ -152,6 +152,23 @@ namespace VascularGenerator.DataStructures
 
             return output;
 
+        }
+
+        //returns a list of nodes in the tree that satisfy the node significance requirement. (it calculates the number of nodes down the line from this node and that is the node's "significance", only nodes that satisfy the nodeSignificance requirement (ie. they have more than nodeSignificance children) are returned in the list).
+        public List<Tree<T>> GetKeyNodes(int nodeSignificance)
+        {
+            List<Tree<T>> output = new();
+            List<Tree<T>> toVisit = new(){this};
+            while (toVisit.Count > 0)
+            {
+                Tree<T> current = toVisit[0];
+                toVisit.RemoveAt(0);
+                if (current.GetNumberOfNodes() == nodeSignificance){output.Add(current); continue;}
+                if (current.GetChildren().Count == 0) {continue;}
+                foreach (Tree<T> c in current.GetChildren()){toVisit.Add(c);}
+            }
+
+            return output;
         }
 
         public override string ToString()
