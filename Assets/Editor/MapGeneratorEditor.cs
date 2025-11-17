@@ -160,6 +160,10 @@ public class MapGeneratorEditor : EditorWindow
             // If you reach a leaf, add the point to the current spline points list, go back to previous bifurcation nodes, 
             // then create a new list of spline points starting from the parent. 
             splinePoints.Add(inletSegments.value);
+            if(inletSegments.parent != null)
+            {
+                splinePoints.Add(inletSegments.parent.value);
+            }
             splines.Add(splinePoints);
 
             KeyValuePair<Tree<VascularSegment>, int> preParentCountsPair;
