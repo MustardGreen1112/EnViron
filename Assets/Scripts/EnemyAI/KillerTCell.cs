@@ -1,10 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Meta.XR.MRUtilityKit.SceneDecorator;
-using NUnit.Framework;
-using Unity.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using VascularGenerator.DataStructures;
 
@@ -28,13 +23,14 @@ using VascularGenerator.DataStructures;
 public class KillerTCell : MonoBehaviour
 {
     /* Params (editable from inspector) */
-    [SerializeField] float detectionRadius = 5f;
-    [SerializeField] float chaseSpeed = 5f; // speeds in units per seocnd
+    [SerializeField] float detectionRadius = 15f;
+    [SerializeField] float chaseSpeed = 1f; // speeds in units per seocnd
     [SerializeField] float returnSpeed = 2.5f;
-    [SerializeField] float maxTimeNoLOS = 2f; // in seconds
-    [SerializeField] float roamTravelTime = 4f;
+    [SerializeField] float maxTimeNoLOS = 3f; // in seconds
+    [SerializeField] float roamTravelTimeScale = 0.2f; // for every 1 unit between the two points of a segment, the travel time increases by this amount
     [SerializeField] int randomModifier = 0; // added to random seed; allows individual predictable randomness
     [SerializeField] GameObject virus;
+    [SerializeField] GameObject virusVisibleBox;
 
     // Map info
     public MapGenerator mapgen;
@@ -48,16 +44,15 @@ public class KillerTCell : MonoBehaviour
     // Navigation variables
     private Tree<VascularSegment> tree;
     private bool isForward;
-    Tree<VascularSegment> currentNode;
-    VascularSegment currentSegment;
+    private Tree<VascularSegment> currentNode;
+    private VascularSegment currentSegment;
     private bool isTraveling;
-    Vector3 startPoint;
-    Vector3 endPoint;
+    private Vector3 startPoint;
+    private Vector3 endPoint;
+    private float adjustedTravelTime;
 
     private MovementController virusController;
 
-    //testing vars
-    bool aggroed;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -75,6 +70,7 @@ public class KillerTCell : MonoBehaviour
 
         currentMode = "Roaming";
         passedTime = 0;
+        adjustedTravelTime = roamTravelTimeScale * Vector3.Distance(startPoint, endPoint);
 
         isForward = true;
         isTraveling = false;
@@ -89,7 +85,6 @@ public class KillerTCell : MonoBehaviour
         {
             rand = new System.Random(ProjectWideConsts.randomSeed + randomModifier);
         }
-        aggroed = false;
     }
 
     // Update is called once per frame
@@ -100,16 +95,14 @@ public class KillerTCell : MonoBehaviour
         // Virus vision check
         if (currentMode != "Return")
         {
-            RaycastHit hitInfo = new();
-            int layerMask = ~(3); // all except 3 (virus layer)
-            if (Physics.Linecast(transform.position, virus.transform.position, out hitInfo, layerMask))
+            RaycastHit hitInfo;
+            LayerMask layerMask = LayerMask.GetMask("Default", "virusVision");
+            if (Physics.Linecast(transform.position, virusVisibleBox.transform.position, out hitInfo, layerMask))
             {
                 if (hitInfo.collider.transform.CompareTag("Player")) 
                 { 
                     currentMode = "Attack";
                     passedTime = 0f; 
-                    if (!aggroed) {print("aggroed");}
-                    aggroed = true;
                 }
             }
         }
@@ -120,8 +113,6 @@ public class KillerTCell : MonoBehaviour
             currentMode = "Roaming";
             transform.position = endPoint;
             isForward = true;
-            print("calmed down");
-            aggroed = false;
         }
 
         if (currentMode == "Roaming" || currentMode == "AttackRoaming")
@@ -146,6 +137,8 @@ public class KillerTCell : MonoBehaviour
                 currentSegment = currentNode.GetValue();
                 startPoint = ConvertToVector(currentSegment.startPoint);
                 endPoint = ConvertToVector(currentSegment.endPoint);
+
+                adjustedTravelTime = roamTravelTimeScale * Vector3.Distance(startPoint, endPoint);
                 
                 isTraveling = true;
                 StartCoroutine(TravelEdge(isForward));
@@ -154,8 +147,7 @@ public class KillerTCell : MonoBehaviour
 
         if (currentMode == "Attack")
         {
-            transform.LookAt(virus.transform);
-            transform.Translate(chaseMovementPerFrame * transform.forward);
+            transform.position = Vector3.MoveTowards(transform.position, virusVisibleBox.transform.position, chaseMovementPerFrame);
         }
     }
 
@@ -225,11 +217,11 @@ public class KillerTCell : MonoBehaviour
         {
             // Special case for first neighbor checked (self)
             bestNode = currentNode;
-            bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().startPoint), virus.transform.position);
+            bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().startPoint), virusVisibleBox.transform.position);
 
             foreach (Tree<VascularSegment> neighbor in currentNode.GetChildren())
             {
-                float candidateDistance = Vector3.Distance(ConvertToVector(neighbor.GetValue().endPoint), virus.transform.position);
+                float candidateDistance = Vector3.Distance(ConvertToVector(neighbor.GetValue().endPoint), virusVisibleBox.transform.position);
                 if (candidateDistance < bestDistance)
                 {
                     bestNode = neighbor;
@@ -244,7 +236,7 @@ public class KillerTCell : MonoBehaviour
             if (currentNode.GetParent() == null)
             {
                 bestNode = currentNode;
-                bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().endPoint), virus.transform.position);
+                bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().endPoint), virusVisibleBox.transform.position);
                 nextIsForward = true;
             }
             
@@ -252,11 +244,11 @@ public class KillerTCell : MonoBehaviour
             {
             // Special case for the first neighbor checked (parent)
             bestNode = currentNode.GetParent();
-            bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().startPoint), virus.transform.position);
+            bestDistance = Vector3.Distance(ConvertToVector(bestNode.GetValue().startPoint), virusVisibleBox.transform.position);
 
             foreach (Tree<VascularSegment> neighbor in currentNode.GetParent().GetChildren())
             {
-                float candidateDistance = Vector3.Distance(ConvertToVector(neighbor.GetValue().endPoint), virus.transform.position);
+                float candidateDistance = Vector3.Distance(ConvertToVector(neighbor.GetValue().endPoint), virusVisibleBox.transform.position);
                 if (candidateDistance < bestDistance)
                 {
                     bestNode = neighbor;
@@ -289,12 +281,12 @@ public class KillerTCell : MonoBehaviour
     {
         float timer = 0f;
 
-        while (timer < roamTravelTime)
+        while (timer < adjustedTravelTime)
         {
             if (currentMode != "Roaming" && currentMode != "AttackRoaming") { break; }
             timer += Time.deltaTime;
 
-            float t = timer / roamTravelTime;
+            float t = timer / adjustedTravelTime;
             Vector3 newLocation; 
             if (isForward) { newLocation = Vector3.Lerp(startPoint, endPoint, t); }
             else { newLocation = Vector3.Lerp(startPoint, endPoint, 1 - t); }
