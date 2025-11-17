@@ -149,6 +149,12 @@ namespace VascularGenerator.DataStructures
             );
             return copy;
         }
+
+        public double[] GetMidpoint()
+        {
+            double[] midpoint = new[]{ startPoint[0]+(endPoint[0]-startPoint[0])/2, startPoint[1]+(endPoint[1]-startPoint[1])/2 };
+            return midpoint;
+        }
         
         public override string ToString()
         {

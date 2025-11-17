@@ -12,7 +12,6 @@ public class HologramAnimationTrigger : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("trigger entered");
         if (other.CompareTag("Player")) { hologramAnimator.SetTrigger("mapControlSwitch"); }
     }
 }
