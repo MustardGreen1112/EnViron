@@ -20,12 +20,6 @@ public class TunnelGenerator : EditorWindow
         public CellProportionPair cell_variant_1;
     }
 
-    internal class TunnelSection
-    {
-        public float radius;
-        public Vector3 normal;
-    }
-
     [System.Serializable]
     internal class Noise
     {
@@ -83,7 +77,7 @@ public class TunnelGenerator : EditorWindow
 
         sectionDensity = EditorGUILayout.IntField("Section Density", sectionDensity);
 
-        if (GUILayout.Button("Generate Tunnel")) { GenerateTunnel(); }
+        //if (GUILayout.Button("Generate Tunnel")) { GenerateTunnel(); }
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -173,65 +167,65 @@ public class TunnelGenerator : EditorWindow
         }
     }
 
-    void GenerateTunnel()
-    {
-        Debug.Log("Generating tunnel...");
-        Debug.Log("Getting noise texture...");
-        sectionNoise.noise = GetNoiseTexture(sectionNoise.noiseSize, sectionNoise.noiseVariation, sectionNoise.noiseMean);
-        cellNoise.noise = GetNoiseTexture(cellNoise.noiseSize, cellNoise.noiseVariation, cellNoise.noiseMean);
-        Debug.Log("Generating cells...");
-        GenerateTunnel(sectionDensity, seed);
-    }
+    //void GenerateTunnel()
+    //{
+    //    Debug.Log("Generating tunnel...");
+    //    Debug.Log("Getting noise texture...");
+    //    sectionNoise.noise = GetNoiseTexture(sectionNoise.noiseSize, sectionNoise.noiseVariation, sectionNoise.noiseMean);
+    //    cellNoise.noise = GetNoiseTexture(cellNoise.noiseSize, cellNoise.noiseVariation, cellNoise.noiseMean);
+    //    Debug.Log("Generating cells...");
+    //    GenerateTunnel(sectionDensity, seed);
+    //}
 
-    void GenerateTunnel(int sectionDensity, int seed)
-    {
-        var frames = spline.BuildFrames();
-        if (GameObject.Find("Tunnel")) { DestroyImmediate(GameObject.Find("Tunnel")); }
-        GameObject tunnel = new GameObject("Tunnel");
-        float w0 = cells[0].cell.weight;
-        float w1 = w0 + cells[0].cell_variant.weight;
-        float w2 = w1 + cells[0].cell_variant_1.weight;
-        for (int k = 0; k < sectionDensity * spline.SegmentCount; k++)
-        {
-            float globalT = UnityEngine.Random.value; // uniformly along spline length
+    //void GenerateTunnel(int sectionDensity, int seed)
+    //{
+    //    var frames = spline.BuildFrames();
+    //    if (GameObject.Find("Tunnel")) { DestroyImmediate(GameObject.Find("Tunnel")); }
+    //    GameObject tunnel = new GameObject("Tunnel");
+    //    float w0 = cells[0].cell.weight;
+    //    float w1 = w0 + cells[0].cell_variant.weight;
+    //    float w2 = w1 + cells[0].cell_variant_1.weight;
+    //    for (int k = 0; k < sectionDensity * spline.SegmentCount; k++)
+    //    {
+    //        float globalT = UnityEngine.Random.value; // uniformly along spline length
 
-            Vector3 N, B;
-            spline.SampleFrame(frames, globalT, out N, out B);
-            int n = Mathf.FloorToInt(globalT * spline.SegmentCount);
-            float t = (globalT * spline.SegmentCount) - n;
-            Vector3 P = spline.Eval(n, t);
-            Vector3 T = spline.EvalTangent(n, t);
+    //        Vector3 N, B;
+    //        spline.SampleFrame(frames, globalT, out N, out B);
+    //        int n = Mathf.FloorToInt(globalT * spline.SegmentCount);
+    //        float t = (globalT * spline.SegmentCount) - n;
+    //        Vector3 P = spline.Eval(n, t);
+    //        Vector3 T = spline.EvalTangent(n, t);
 
-            // Sample offset direction
-            float theta = UnityEngine.Random.value * 2f * Mathf.PI;
-            Vector3 offset = Mathf.Cos(theta) * N + Mathf.Sin(theta) * B;
+    //        // Sample offset direction
+    //        float theta = UnityEngine.Random.value * 2f * Mathf.PI;
+    //        Vector3 offset = Mathf.Cos(theta) * N + Mathf.Sin(theta) * B;
 
-            // Sample point based on noise texture
-            Color p = sectionNoise.noise.GetPixel(k / 2, k % 2);
-            float d = Mathf.Max(p.g * Mathf.Sqrt(sectionNoise.noiseVariation) + sectionNoise.noiseMean, sectionNoise.minValue); // Map to [min_radius, mean + variation]
-            Vector3 finalPos = P + offset * d;
+    //        // Sample point based on noise texture
+    //        Color p = sectionNoise.noise.GetPixel(k / 2, k % 2);
+    //        float d = Mathf.Max(p.g * Mathf.Sqrt(sectionNoise.noiseVariation) + sectionNoise.noiseMean, sectionNoise.minValue); // Map to [min_radius, mean + variation]
+    //        Vector3 finalPos = P + offset * d;
 
-            // Sample cell prefab based on weights.
-            float rw = UnityEngine.Random.value;
-            GameObject cellPrefab = rw < w0 ? cells[0].cell.prefab :
-                                 (rw < w1 ? cells[0].cell_variant.prefab : cells[0].cell_variant_1.prefab);
+    //        // Sample cell prefab based on weights.
+    //        float rw = UnityEngine.Random.value;
+    //        GameObject cellPrefab = rw < w0 ? cells[0].cell.prefab :
+    //                             (rw < w1 ? cells[0].cell_variant.prefab : cells[0].cell_variant_1.prefab);
 
-            // Set cell size. 
-            float cellSize;
-            if (k % 2 == 0) cellSize = cellNoise.noise.GetPixel((k + seed) % cellNoise.noiseSize, k % cellNoise.noiseSize).r;
-            else cellSize = cellNoise.noise.GetPixel((k + seed) % cellNoise.noiseSize, k % cellNoise.noiseSize).g;
-            cellSize = Mathf.Max(cellNoise.minValue, cellSize * cellNoise.noiseVariation + cellNoise.noiseMean);
+    //        // Set cell size. 
+    //        float cellSize;
+    //        if (k % 2 == 0) cellSize = cellNoise.noise.GetPixel((k + seed) % cellNoise.noiseSize, k % cellNoise.noiseSize).r;
+    //        else cellSize = cellNoise.noise.GetPixel((k + seed) % cellNoise.noiseSize, k % cellNoise.noiseSize).g;
+    //        cellSize = Mathf.Max(cellNoise.minValue, cellSize * cellNoise.noiseVariation + cellNoise.noiseMean);
 
-            // Generate prefab. 
-            GameObject cellInstance = (GameObject)PrefabUtility.InstantiatePrefab(cellPrefab);
-            cellInstance.transform.position = finalPos;
-            cellInstance.transform.parent = tunnel.transform;
-            cellInstance.transform.localScale *= cellSize;
+    //        // Generate prefab. 
+    //        GameObject cellInstance = (GameObject)PrefabUtility.InstantiatePrefab(cellPrefab);
+    //        cellInstance.transform.position = finalPos;
+    //        cellInstance.transform.parent = tunnel.transform;
+    //        cellInstance.transform.localScale *= cellSize;
 
-            // Set rotation
-            Quaternion rotation = Quaternion.LookRotation(N);
-            cellInstance.transform.rotation = rotation;
-            cellInstance.name = cells[0].cellName + "_" + (k).ToString();
-        }
-    }
+    //        // Set rotation
+    //        Quaternion rotation = Quaternion.LookRotation(N);
+    //        cellInstance.transform.rotation = rotation;
+    //        cellInstance.name = cells[0].cellName + "_" + (k).ToString();
+    //    }
+    //}
 }
