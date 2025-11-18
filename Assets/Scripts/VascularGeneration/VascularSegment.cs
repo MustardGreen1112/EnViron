@@ -16,7 +16,7 @@ namespace VascularGenerator.DataStructures
 
         private double dynamicViscosity = 0.0035;
 
-        public int curveID;
+        [JsonProperty] public int curveID;
         public string tag;
 
 

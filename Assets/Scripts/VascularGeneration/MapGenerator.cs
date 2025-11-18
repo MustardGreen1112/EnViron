@@ -17,11 +17,17 @@ public class MapGenerator : MonoBehaviour
     float scaler = 10; //scalar for radius
 
     public Tree<VascularSegment> segmentTreeRoot; //THIS IS THE MAP TREE STRUCTURE!!!!!!
+
     public bool useVolumeOptimization;
     public bool LoadFromDummyGraph;
     public string loadJSON_name;
     public bool storeGraphGenerated;
     public string OVERWRITE_JSONStorageName;
+    public bool loadFullGraph;
+    public string graphWithCurveIDName;
+    public string curveIDDictionaryName;
+
+    Dictionary<int, CatmullRomSpline> curveDict; //THIS IS THE CURVE ID TO CURVE OBJECT DICTIONARY
  
 
     int perfusionRadius = 100;
@@ -53,81 +59,90 @@ public class MapGenerator : MonoBehaviour
         );
         
         buildingBlock.SetActive(true);
+        keyPointMarker.SetActive(false);
+
         mapParent = new GameObject("mapParent");
-        if (LoadFromDummyGraph)
+
+        if (loadFullGraph)
         {
-            //loading from JSON
-            segmentTreeRoot = generator.LoadJSON("Assets/Scripts/VascularGeneration/jsons/"+loadJSON_name+".txt");
+            curveDict = CurveInterfacor.LoadCurveDictionary("Assets/Resources/"+curveIDDictionaryName+".json");
+            segmentTreeRoot = generator.LoadJSON("Assets/Resources/"+graphWithCurveIDName+".json");
         }
         else
         {
-            segmentTreeRoot = generator.inletSegment;
-        }
-        
-        
-
-        
-
-
-        //now we get a list of the nodes that will be brain + respawn nodes
-        int keyNodeExclusionRadius = (int)(perfusionRadius/(2*(respawnCellTypes.Count+1)));
-        List<Tree<VascularSegment>> keyNodes = GetKeyNodes(respawnCellTypes, keyNodeExclusionRadius);
-        
-        if (keyNodes != null)
-        {
-            //marking each key node with a tag 
-            List<string> tags = new() { "brain" };
-            foreach (string s in respawnCellTypes){tags.Add(s);}
-
-            foreach(Tree<VascularSegment> node in keyNodes)
+            if (LoadFromDummyGraph)
             {
-                string tag = tags[0];
-                tags.RemoveAt(0);
-                node.isKey = true;
-                node.tag = tag;
-
-                Vector3 startPoint = new Vector3((float)node.GetValue().startPoint[0], 0, (float)node.GetValue().startPoint[1]);
-                Vector3 endPoint = new Vector3((float)node.GetValue().endPoint[0], 0, (float)node.GetValue().endPoint[1]);
-                GameObject marker = Instantiate(keyPointMarker, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
-                marker.transform.localScale = new Vector3(5,5,5);
+                //loading from JSON
+                segmentTreeRoot = generator.LoadJSON("Assets/Scripts/VascularGeneration/jsons/"+loadJSON_name+".txt");
             }
-
-            //marking any nodes within the influenceRadius (defined by keyNodeExclusionRadius) of each key node with said node's tag
-            double influenceRadius = keyNodeExclusionRadius;
-            List<Tree<VascularSegment>> toVisit = new(){segmentTreeRoot};
-            while(toVisit.Count > 0)
+            else
             {
-                Tree<VascularSegment> current = toVisit[0];
-                toVisit.RemoveAt(0);
-                //checking to see if this node is within  the influence raidus
-                foreach (Tree<VascularSegment> keyNode in keyNodes)
+                segmentTreeRoot = generator.inletSegment;
+            }
+            
+
+            //now we get a list of the nodes that will be brain + respawn nodes
+            int keyNodeExclusionRadius = (int)(perfusionRadius/(2*(respawnCellTypes.Count+1)));
+            List<Tree<VascularSegment>> keyNodes = GetKeyNodes(respawnCellTypes, keyNodeExclusionRadius);
+            
+            if (keyNodes != null)
+            {
+                //marking each key node with a tag 
+                List<string> tags = new() { "brain" };
+                foreach (string s in respawnCellTypes){tags.Add(s);}
+
+                foreach(Tree<VascularSegment> node in keyNodes)
                 {
-                    // double[] currentMidpoint = current.GetValue().GetMidpoint();
-                    double[] currentStartPoint = current.GetValue().startPoint;
-                    double[] currentEndPoint = current.GetValue().endPoint;
-                    
-                    double[] keyMidpoint = keyNode.GetValue().GetMidpoint();
-                    
-                    double startPointDistanceSquared = Math.Pow(currentStartPoint[0]-keyMidpoint[0], 2) + Math.Pow(currentStartPoint[1]-keyMidpoint[1], 2);
-                    double endPointDistanceSquared = Math.Pow(currentEndPoint[0]-keyMidpoint[0], 2) + Math.Pow(currentEndPoint[1]-keyMidpoint[1], 2);
+                    string tag = tags[0];
+                    tags.RemoveAt(0);
+                    node.isKey = true;
+                    node.tag = tag;
 
-                    if ( startPointDistanceSquared < Math.Pow(influenceRadius, 2) || endPointDistanceSquared < Math.Pow(influenceRadius, 2) )
-                    {
-                        current.tag = keyNode.tag;
-                    }
+                    Vector3 startPoint = new Vector3((float)node.GetValue().startPoint[0], 0, (float)node.GetValue().startPoint[1]);
+                    Vector3 endPoint = new Vector3((float)node.GetValue().endPoint[0], 0, (float)node.GetValue().endPoint[1]);
+                    GameObject marker = Instantiate(keyPointMarker, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
+                    marker.transform.localScale = new Vector3(5,5,5);
                 }
-                //adding children to the queue
-                if (current.GetChildren().Count ==0){continue;}
-                foreach (Tree<VascularSegment> c in current.GetChildren()){toVisit.Add(c);}
+
+                //marking any nodes within the influenceRadius (defined by keyNodeExclusionRadius) of each key node with said node's tag
+                double influenceRadius = keyNodeExclusionRadius;
+                List<Tree<VascularSegment>> toVisit = new(){segmentTreeRoot};
+                while(toVisit.Count > 0)
+                {
+                    Tree<VascularSegment> current = toVisit[0];
+                    toVisit.RemoveAt(0);
+                    //checking to see if this node is within  the influence raidus
+                    foreach (Tree<VascularSegment> keyNode in keyNodes)
+                    {
+                        // double[] currentMidpoint = current.GetValue().GetMidpoint();
+                        double[] currentStartPoint = current.GetValue().startPoint;
+                        double[] currentEndPoint = current.GetValue().endPoint;
+                        
+                        double[] keyMidpoint = keyNode.GetValue().GetMidpoint();
+                        
+                        double startPointDistanceSquared = Math.Pow(currentStartPoint[0]-keyMidpoint[0], 2) + Math.Pow(currentStartPoint[1]-keyMidpoint[1], 2);
+                        double endPointDistanceSquared = Math.Pow(currentEndPoint[0]-keyMidpoint[0], 2) + Math.Pow(currentEndPoint[1]-keyMidpoint[1], 2);
+
+                        if ( startPointDistanceSquared < Math.Pow(influenceRadius, 2) || endPointDistanceSquared < Math.Pow(influenceRadius, 2) )
+                        {
+                            current.tag = keyNode.tag;
+                        }
+                    }
+                    //adding children to the queue
+                    if (current.GetChildren().Count ==0){continue;}
+                    foreach (Tree<VascularSegment> c in current.GetChildren()){toVisit.Add(c);}
+                }
             }
-        }
 
 
-        //storing the generated graph if so directed
-        if (storeGraphGenerated && !LoadFromDummyGraph)
-        {
-            generator.StoreJSON(segmentTreeRoot, "Assets/Scripts/VascularGeneration/jsons/"+OVERWRITE_JSONStorageName+".txt");
+            //storing the generated graph if so directed
+            if (storeGraphGenerated && !LoadFromDummyGraph)
+            {
+                generator.StoreJSON(segmentTreeRoot, "Assets/Scripts/VascularGeneration/jsons/"+OVERWRITE_JSONStorageName+".txt");
+            }        
         }
+
+       
 
         //creating the map mesh
         CreateMesh(segmentTreeRoot);

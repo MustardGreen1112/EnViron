@@ -19305,14 +19305,18 @@ MonoBehaviour:
   - heart
   - kidney
   keyPointMarker: {fileID: 450667968}
+  markKeySegments: 1
   keyMaterial: {fileID: 2100000, guid: c9f15949f062b7645ae42a9a5f877eaf, type: 2}
   buildingBlock: {fileID: 162737460}
   buildingBlockMaterial: {fileID: 2100000, guid: 0ebf26bf0d617d44caf9c2b6bffcca4d, type: 2}
   useVolumeOptimization: 0
   LoadFromDummyGraph: 0
-  loadJSON_name: testJSON
-  storeGraphGenerated: 1
-  OVERWRITE_JSONStorageName: somethingIsWrong
+  loadJSON_name: dummyGraphTagged
+  storeGraphGenerated: 0
+  OVERWRITE_JSONStorageName: dummyGraphTagged
+  loadFullGraph: 1
+  graphWithCurveIDName: dummyGraph2_withCurveID
+  curveIDDictionaryName: dummyGraph2_curves
 --- !u!1 &1689184726
 GameObject:
   m_ObjectHideFlags: 0
