@@ -61,16 +61,16 @@ public class MapGeneratorEditor : EditorWindow
 
         // Serialize the fields.
         SerializedObject serializedObject = new SerializedObject(this);
-        SerializedProperty treeJsonName = serializedObject.FindProperty("treeJsonName");
-        SerializedProperty splinesJsonName = serializedObject.FindProperty("splinesJsonName");
+        SerializedProperty treeJsonNameProperty = serializedObject.FindProperty("treeJsonName");
+        SerializedProperty splinesJsonNameProperty = serializedObject.FindProperty("splinesJsonName");
 
         SerializedProperty cellNoise = serializedObject.FindProperty("cellNoise");
         SerializedProperty cellsProperty = serializedObject.FindProperty("cells");
         SerializedProperty sectionNoise = serializedObject.FindProperty("sectionNoise");
 
         // Visualize the field we need. 
-        EditorGUILayout.PropertyField(treeJsonName, new GUIContent("Tree Json Name"), true);
-        EditorGUILayout.PropertyField(splinesJsonName, new GUIContent("Splines Json Name"), true);
+        EditorGUILayout.PropertyField(treeJsonNameProperty, new GUIContent("Tree Json Name"), true);
+        EditorGUILayout.PropertyField(splinesJsonNameProperty, new GUIContent("Splines Json Name"), true);
 
         EditorGUILayout.PropertyField(cellsProperty, new GUIContent("Cells"), true);
         EditorGUILayout.PropertyField(sectionNoise, new GUIContent("Section Noise"), true);
@@ -81,7 +81,7 @@ public class MapGeneratorEditor : EditorWindow
 
         if (GUILayout.Button("Generate Map"))
         {
-            _inletSegments = LoadVascularTreeFromJson();
+            _inletSegments = LoadVascularTreeFromJson(treeJsonName);
             List<List<VascularSegment>> splines = GenerateSpline(_inletSegments);
 
             // Update the curve id in the tree. 
@@ -100,7 +100,7 @@ public class MapGeneratorEditor : EditorWindow
 
         if (GUILayout.Button("Load Curves"))
         {
-            catmullSplineDictionary = LoadCurveDictionary(treeJsonName.stringValue);
+            catmullSplineDictionary = LoadCurveDictionary(splinesJsonName);
 
             if (catmullSplineDictionary.Count > 0)
             {
@@ -272,7 +272,8 @@ public class MapGeneratorEditor : EditorWindow
         }
     }
 
-    private Dictionary<int, CatmullRomSpline> LoadCurveDictionary(string fileName)
+    //this given a filename loads an ID to curve Object dictionary
+    public static Dictionary<int, CatmullRomSpline> LoadCurveDictionary(string fileName)
     {
         string baseFileName = fileName.Replace(".json", "");
         string curvesFileName = baseFileName + "_curves.json";
@@ -400,7 +401,7 @@ public class MapGeneratorEditor : EditorWindow
     /// </summary>
     /// <returns></returns>
 
-    private Tree<VascularSegment> LoadVascularTreeFromJson()
+    public static Tree<VascularSegment> LoadVascularTreeFromJson(string treeJsonName)
     {
         // Constants for realistic microvascular scale
         double perfusionRadius = 100;                // in pixels (1 px = 1 cm → 1 m radius domain)
