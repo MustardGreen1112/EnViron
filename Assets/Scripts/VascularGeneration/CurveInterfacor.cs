@@ -16,11 +16,11 @@ public class CurveInterfacor
 
         try
         {
-            // if (!File.Exists(path))
-            // {
-            //     Debug.LogError($"Curves file not found at: {path}");
-            //     return new Dictionary<int, CatmullRomSpline>();
-            // }
+            //if (!File.Exists(path))
+            //{
+            //    Debug.LogError($"Curves file not found at: {path}");
+            //    return new Dictionary<int, CatmullRomSpline>();
+            //}
 
             string json = File.ReadAllText(path);
             CurveDictionaryData data = JsonConvert.DeserializeObject<CurveDictionaryData>(json);

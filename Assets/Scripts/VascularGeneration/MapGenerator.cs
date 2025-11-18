@@ -22,7 +22,8 @@ public class MapGenerator : MonoBehaviour
     [System.NonSerialized] public Tree<VascularSegment> brainSegment;
     public GameObject bloodBrainBarrierDivider;
 
-    float radiusScalar = 10; //scalar for radius
+    public float minimapScale = 0.005f;
+    public float radiusScalar = 20; //scalar for radius
 
     public Tree<VascularSegment> segmentTreeRoot; //THIS IS THE MAP TREE STRUCTURE!!!!!!
 
@@ -179,13 +180,17 @@ public class MapGenerator : MonoBehaviour
             foreach (Tree<VascularSegment> c in current.GetChildren()){queue.Add(c);}
         }
 
-        //now we have a brain Node locaiton (brainSegment) and a list of key nodes (spawnPointNodes)
-        CatmullRomSpline brainSegmentSpline = curveDict[brainSegment.GetValue().curveID];
-        Vector3 brainBarrierInstancePoint = brainSegmentSpline.Eval(0.5f);
-        GameObject brainBarrier = Instantiate(bloodBrainBarrierDivider, brainBarrierInstancePoint, quaternion.identity);
-        brainBarrier.transform.localScale = brainBarrier.transform.localScale * (float)brainSegment.GetValue().radius*radiusScalar; // new Vector3((float)brainSegment.GetValue().radius, 1f, (float)brainSegment.GetValue().radius);
-        brainBarrier.transform.LookAt(brainSegmentSpline.Eval(1f)-brainBarrierInstancePoint);
-        brainBarrier.transform.Rotate(new Vector3(90f, 0f, 0f));
+        if(bloodBrainBarrierDivider != null)
+        {
+            //now we have a brain Node locaiton (brainSegment) and a list of key nodes (spawnPointNodes)
+            CatmullRomSpline brainSegmentSpline = curveDict[brainSegment.GetValue().curveID];
+            Vector3 brainBarrierInstancePoint = brainSegmentSpline.Eval(0.5f);
+            GameObject brainBarrier = Instantiate(bloodBrainBarrierDivider, brainBarrierInstancePoint, quaternion.identity);
+            brainBarrier.transform.localScale = brainBarrier.transform.localScale * (float)brainSegment.GetValue().radius * radiusScalar; // new Vector3((float)brainSegment.GetValue().radius, 1f, (float)brainSegment.GetValue().radius);
+            brainBarrier.transform.LookAt(brainSegmentSpline.Eval(1f) - brainBarrierInstancePoint);
+            brainBarrier.transform.Rotate(new Vector3(90f, 0f, 0f));
+        }
+
 
         //now we will create spawner objects and keep track of them in a list, all from the list of spawnerNodes
         int id = 0;
@@ -208,6 +213,7 @@ public class MapGenerator : MonoBehaviour
             float scalar = 4*(float)spawnNode.GetValue().radius*radiusScalar; //controls the size of the minimap virus
             infectedMarker.transform.localScale = new Vector3(scalar, scalar, scalar);
             idToMiniMapDict[virusGen.id] = infectedMarker; //saving the infected minimap marker object in the id to object dictionary
+            infectedMarker.transform.SetParent(mapParent.transform);
             
         }
 
@@ -221,14 +227,14 @@ public class MapGenerator : MonoBehaviour
 
         //creating the map mesh
         CreateMesh(segmentTreeRoot);
-        float minimapScale = 1f;//0.15f;
         mapParent.transform.localScale = new Vector3(minimapScale, minimapScale, minimapScale); 
         
 
         Debug.Log("---Program Complete---");
         buildingBlock.SetActive(false);
         keyPointMarker.SetActive(false);
-
+        bloodBrainBarrierDivider.SetActive(false);
+        spawnerObject.SetActive(false);
 
     }
 

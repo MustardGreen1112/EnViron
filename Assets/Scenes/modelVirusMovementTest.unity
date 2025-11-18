@@ -11416,6 +11416,10 @@ MonoBehaviour:
   keyMaterial: {fileID: 0}
   buildingBlock: {fileID: 685107115}
   buildingBlockMaterial: {fileID: 0}
+  respawnManager: {fileID: 0}
+  spawnerObject: {fileID: 0}
+  infectedPointMapMarker: {fileID: 0}
+  bloodBrainBarrierDivider: {fileID: 0}
   useVolumeOptimization: 0
   LoadFromDummyGraph: 1
   loadJSON_name: dummyGraph
@@ -18956,7 +18960,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1901496223
 MonoBehaviour:
   m_ObjectHideFlags: 0
