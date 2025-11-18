@@ -14,7 +14,15 @@ public class MapGenerator : MonoBehaviour
     public GameObject buildingBlock;
     public Material buildingBlockMaterial;
     [System.NonSerialized] public GameObject mapParent; //this is the minimap object!!!!
-    float scaler = 10; //scalar for radius
+    public RespawnManager respawnManager;
+    public GameObject spawnerObject;
+    [System.NonSerialized] public List<GameObject> spawnedObjects = new(); //the spawner game object instances
+    public GameObject infectedPointMapMarker;
+    [System.NonSerialized] public List<VirusGenController> spawnedObjectsControllers = new(); //the scripts for the spawnerGameObject instances
+    [System.NonSerialized] public Tree<VascularSegment> brainSegment;
+    public GameObject bloodBrainBarrierDivider;
+
+    float radiusScalar = 10; //scalar for radius
 
     public Tree<VascularSegment> segmentTreeRoot; //THIS IS THE MAP TREE STRUCTURE!!!!!!
 
@@ -28,6 +36,7 @@ public class MapGenerator : MonoBehaviour
     public string curveIDDictionaryName;
 
     public Dictionary<int, CatmullRomSpline> curveDict; //THIS IS THE CURVE ID TO CURVE OBJECT DICTIONARY
+    public Dictionary<int, GameObject> idToMiniMapDict = new(); //given a virusGenController Id, it returns the game object in the minimap that is associated with that spawn point
  
 
     int perfusionRadius = 100;
@@ -41,10 +50,10 @@ public class MapGenerator : MonoBehaviour
         // Constants for realistic microvascular scale
         // double perfusionRadius = 100;                // in pixels (1 px = 1 cm → 1 m radius domain)
         int numberTerminalSegments = 80;
-        double terminalPressure = 20;               // 60 mmHg in Pascals
-        double inletPressure = 400;                 // 100 mmHg in Pascals
-        double inletFlow = 1000;                     // 500 μL/min in m³/s (approximate)
-        double y = 3.0;                               // Murray's law exponent
+        double terminalPressure = 20;                   // 60 mmHg in Pascals
+        double inletPressure = 400;                     // 100 mmHg in Pascals
+        double inletFlow = 1000;                        // 500 μL/min in m³/s (approximate)
+        double y = 3.0;                                 // Murray's law exponent
 
         VascularGeneration generator = new VascularGeneration(
             perfusionRadius: (int)perfusionRadius,
@@ -144,8 +153,76 @@ public class MapGenerator : MonoBehaviour
 
        
 
+       
+        //creating the respawn points
+        List<Tree<VascularSegment>> spawnPointNodes = new();
+
+        List<Tree<VascularSegment>> queue = new(){segmentTreeRoot};
+        while (queue.Count > 0)
+        {
+            Tree<VascularSegment> current = queue[0];
+            queue.RemoveAt(0);
+
+            if (current.isKey)
+            {
+                if (current.tag == "brain")
+                {
+                    brainSegment = current;
+                }
+                else
+                {
+                    spawnPointNodes.Add(current);
+                }
+            }
+
+            if (current.GetChildren().Count == 0){continue;}
+            foreach (Tree<VascularSegment> c in current.GetChildren()){queue.Add(c);}
+        }
+
+        //now we have a brain Node locaiton (brainSegment) and a list of key nodes (spawnPointNodes)
+        CatmullRomSpline brainSegmentSpline = curveDict[brainSegment.GetValue().curveID];
+        Vector3 brainBarrierInstancePoint = brainSegmentSpline.Eval(0.5f);
+        GameObject brainBarrier = Instantiate(bloodBrainBarrierDivider, brainBarrierInstancePoint, quaternion.identity);
+        brainBarrier.transform.localScale = brainBarrier.transform.localScale * (float)brainSegment.GetValue().radius*radiusScalar; // new Vector3((float)brainSegment.GetValue().radius, 1f, (float)brainSegment.GetValue().radius);
+        brainBarrier.transform.LookAt(brainSegmentSpline.Eval(1f)-brainBarrierInstancePoint);
+        brainBarrier.transform.Rotate(new Vector3(90f, 0f, 0f));
+
+        //now we will create spawner objects and keep track of them in a list, all from the list of spawnerNodes
+        int id = 0;
+        foreach (Tree<VascularSegment> spawnNode in spawnPointNodes)
+        {
+            //creating the actual spawner objects and keeping track of the scripts attached
+            CatmullRomSpline spawnerSpline = curveDict[spawnNode.GetValue().curveID];
+            Vector3 spawnerInstancePoint = spawnerSpline.Eval(0.5f);
+            GameObject spawnPoint = Instantiate(spawnerObject, spawnerInstancePoint, Quaternion.identity);
+            spawnedObjects.Add(spawnPoint);
+            VirusGenController virusGen = spawnPoint.GetComponent<VirusGenController>();
+            spawnedObjectsControllers.Add(virusGen);
+            virusGen.id = id;
+            id++;
+
+            //creating the minimap objects
+            Vector3 startPoint = new Vector3((float)spawnNode.GetValue().startPoint[0], 0, (float)spawnNode.GetValue().startPoint[1]);
+            Vector3 endPoint = new Vector3((float)spawnNode.GetValue().endPoint[0], 0, (float)spawnNode.GetValue().endPoint[1]);
+            GameObject infectedMarker = Instantiate(infectedPointMapMarker, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
+            float scalar = 4*(float)spawnNode.GetValue().radius*radiusScalar; //controls the size of the minimap virus
+            infectedMarker.transform.localScale = new Vector3(scalar, scalar, scalar);
+            idToMiniMapDict[virusGen.id] = infectedMarker; //saving the infected minimap marker object in the id to object dictionary
+            
+        }
+
+        if (respawnManager!= null)
+        {
+            respawnManager.respawnPointControls = spawnedObjectsControllers;
+    
+        }else{Debug.Log("RESPAWN MANAGER NOT SET");}
+        
+
+
         //creating the map mesh
         CreateMesh(segmentTreeRoot);
+        float minimapScale = 1f;//0.15f;
+        mapParent.transform.localScale = new Vector3(minimapScale, minimapScale, minimapScale); 
         
 
         Debug.Log("---Program Complete---");
@@ -158,7 +235,29 @@ public class MapGenerator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //on update we loop through the respawn points, if it's active, we turn it on in the minimap, if its inactive, we turn it off in the minimap
+        foreach (VirusGenController virusGen in spawnedObjectsControllers)
+        {
+            GameObject mapMarker = idToMiniMapDict[virusGen.id];
+            if (virusGen.isRespawnPoint) //if the respawn point is active
+            {   
+               
+                if (!mapMarker.activeSelf) //if the minimapmarker isn't active already
+                {
+                    Debug.Log("we Have a respawn point");
+                    virusGen.TurnOnVirusGen(); //if it's off we turn it on here
+                    mapMarker.SetActive(true);
+                }
+            }
+            else //if the respawn point is inactive
+            {
+               if (mapMarker.activeSelf) //if the minimapmarker is active already
+                {
+                    virusGen.TurnOffVirusGen(); //if it is on we turn it off here
+                    mapMarker.SetActive(false);
+                } 
+            }
+        }
     }
 
 
@@ -180,7 +279,7 @@ public class MapGenerator : MonoBehaviour
             
 
             GameObject segment  = Instantiate(buildingBlock, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
-            segment.transform.localScale = new Vector3((float)currentSegment.GetValue().radius*scaler, distance/2, (float)currentSegment.GetValue().radius*scaler);
+            segment.transform.localScale = new Vector3((float)currentSegment.GetValue().radius*radiusScalar, distance/2, (float)currentSegment.GetValue().radius*radiusScalar);
             segment.transform.rotation = Quaternion.FromToRotation(Vector3.up, (endPoint-startPoint).normalized);
             segment.transform.parent = mapParent.transform;
             if (buildingBlockMaterial != null)
@@ -194,12 +293,12 @@ public class MapGenerator : MonoBehaviour
                 segment.GetComponent<Renderer>().material = keyMaterial;
             }
 
-
             //adding the children to the queue
             if(currentSegment.GetChildren().Count==0){continue;}
             foreach (Tree<VascularSegment> c in currentSegment.GetChildren()){toVisit.Add(c);}
             
         }
+
         
     }
 
