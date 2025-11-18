@@ -272,6 +272,7 @@ public class MapGeneratorEditor : EditorWindow
         }
     }
 
+    //this given a filename loads an ID to curve Object dictionary
     public static Dictionary<int, CatmullRomSpline> LoadCurveDictionary(string fileName)
     {
         string baseFileName = fileName.Replace(".json", "");
