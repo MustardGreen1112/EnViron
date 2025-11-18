@@ -1103,6 +1103,7 @@ UnityEngine.Joint::set_enablePreprocessing_Injected
 UnityEngine.Joint::set_massScale_Injected
 UnityEngine.JsonUtility::FromJsonInternal_Injected
 UnityEngine.JsonUtility::ToJsonInternal_Injected
+UnityEngine.LayerMask::NameToLayer_Injected
 UnityEngine.Light::get_enableSpotReflector_Injected
 UnityEngine.Light::get_useColorTemperature_Injected
 UnityEngine.Light::get_cookie_Injected
