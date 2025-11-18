@@ -27,7 +27,7 @@ public class MapGenerator : MonoBehaviour
     public string graphWithCurveIDName;
     public string curveIDDictionaryName;
 
-    Dictionary<int, CatmullRomSpline> curveDict; //THIS IS THE CURVE ID TO CURVE OBJECT DICTIONARY
+    public Dictionary<int, CatmullRomSpline> curveDict; //THIS IS THE CURVE ID TO CURVE OBJECT DICTIONARY
  
 
     int perfusionRadius = 100;
