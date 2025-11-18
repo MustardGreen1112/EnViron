@@ -14,7 +14,7 @@ public class MapGenerator : MonoBehaviour
     public GameObject buildingBlock;
     public Material buildingBlockMaterial;
     [System.NonSerialized] public GameObject mapParent; //this is the minimap object!!!!
-    float scaler = 10; //scalar for radius
+    float scaler = 40; //scalar for radius
 
     public Tree<VascularSegment> segmentTreeRoot; //THIS IS THE MAP TREE STRUCTURE!!!!!!
 
@@ -30,7 +30,7 @@ public class MapGenerator : MonoBehaviour
     public Dictionary<int, CatmullRomSpline> curveDict; //THIS IS THE CURVE ID TO CURVE OBJECT DICTIONARY
  
 
-    int perfusionRadius = 100;
+    int perfusionRadius = 400;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -40,7 +40,7 @@ public class MapGenerator : MonoBehaviour
 
         // Constants for realistic microvascular scale
         // double perfusionRadius = 100;                // in pixels (1 px = 1 cm → 1 m radius domain)
-        int numberTerminalSegments = 80;
+        int numberTerminalSegments = 90;
         double terminalPressure = 20;               // 60 mmHg in Pascals
         double inletPressure = 400;                 // 100 mmHg in Pascals
         double inletFlow = 1000;                     // 500 μL/min in m³/s (approximate)

@@ -162,8 +162,8 @@ public class MapGeneratorEditor : EditorWindow
             float t = spline.ArcLengthToT(arcLengthTable, length);
             Vector3 N, B; float radius;
             spline.SampleFrame(frames, t, out N, out B, out radius);
-            radius *= 15.0f;
-            Debug.Log("radius is " + radius);
+            radius *= 45.0f;
+            //Debug.Log("radius is " + radius);
             Vector3 P = spline.Eval(t);
             Vector3 T = spline.EvalTangent(t);
             // Sample offset direction
