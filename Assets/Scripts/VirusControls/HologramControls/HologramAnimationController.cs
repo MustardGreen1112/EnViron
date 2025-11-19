@@ -10,6 +10,7 @@ public class HologramAnimationController : MonoBehaviour
 {
     [SerializeField] GameObject hologramVirusControlObj;
     HologramVirusController hologramVirusControl;
+    public HologramAnimationTrigger button;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,5 +21,10 @@ public class HologramAnimationController : MonoBehaviour
     public void DeactivateParticles()
     {
         hologramVirusControl.DeactivateParticles();
+    }
+
+    public void ToggleAnimation()
+    {
+        button.ToggleMapVisible();
     }
 }

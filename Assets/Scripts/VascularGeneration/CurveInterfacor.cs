@@ -23,6 +23,7 @@ public class CurveInterfacor
             //}
 
             string json = File.ReadAllText(path);
+            Debug.Log(json);
             CurveDictionaryData data = JsonConvert.DeserializeObject<CurveDictionaryData>(json);
 
             Dictionary<int, CatmullRomSpline> curveDictionary = new Dictionary<int, CatmullRomSpline>();

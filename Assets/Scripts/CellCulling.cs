@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class CellCulling : MonoBehaviour
 {
     private KDTree kdtree;
-    [Range(0f, 100f)]
+    [Range(0f, 200.0f)]
     public float radius = 10.0f;
     private Dictionary<Vector3, GameObject> pgpairs;
     private Vector3[] pointCloud;
@@ -39,6 +39,12 @@ public class CellCulling : MonoBehaviour
             index++;
         }
         kdtree = new KDTree(pointCloud, maxPointPerLeafNode);
+
+        var resultIndices = new List<int>();
+        query.Radius(kdtree, playerTransform.position, radius, resultIndices);
+        foreach (GameObject go in pgpairs.Values) go.SetActive(false);
+        foreach (int id in resultIndices) pgpairs[pointCloud[id]].SetActive(true);
+        previousPlayerLocation = playerTransform.position;
     }
 
     // Update is called once per frame

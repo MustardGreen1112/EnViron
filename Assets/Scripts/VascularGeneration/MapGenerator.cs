@@ -22,6 +22,10 @@ public class MapGenerator : MonoBehaviour
     [System.NonSerialized] public Tree<VascularSegment> brainSegment;
     public GameObject bloodBrainBarrierDivider;
 
+    public GameObject virusPlayer;
+    public GameObject playerMiniMapMarker;
+    [System.NonSerialized] public GameObject minimapPlayerInstance;
+
     public float minimapScale = 0.005f;
     public float radiusScalar = 20; //scalar for radius
 
@@ -43,7 +47,7 @@ public class MapGenerator : MonoBehaviour
     int perfusionRadius = 400;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
 
         Debug.Log("---Starting Program---");
@@ -70,6 +74,9 @@ public class MapGenerator : MonoBehaviour
         
         buildingBlock.SetActive(true);
         keyPointMarker.SetActive(false);
+        if (bloodBrainBarrierDivider != null) bloodBrainBarrierDivider.SetActive(true);
+        spawnerObject.SetActive(true);
+        playerMiniMapMarker.SetActive(true);
 
         mapParent = new GameObject("mapParent");
 
@@ -186,7 +193,7 @@ public class MapGenerator : MonoBehaviour
             CatmullRomSpline brainSegmentSpline = curveDict[brainSegment.GetValue().curveID];
             Vector3 brainBarrierInstancePoint = brainSegmentSpline.Eval(0.5f);
             GameObject brainBarrier = Instantiate(bloodBrainBarrierDivider, brainBarrierInstancePoint, quaternion.identity);
-            brainBarrier.transform.localScale = brainBarrier.transform.localScale * (float)brainSegment.GetValue().radius * radiusScalar; // new Vector3((float)brainSegment.GetValue().radius, 1f, (float)brainSegment.GetValue().radius);
+            brainBarrier.transform.localScale = brainBarrier.transform.localScale * (float)brainSegment.GetValue().radius * 45f*3f; // new Vector3((float)brainSegment.GetValue().radius, 1f, (float)brainSegment.GetValue().radius);
             brainBarrier.transform.LookAt(brainSegmentSpline.Eval(1f) - brainBarrierInstancePoint);
             brainBarrier.transform.Rotate(new Vector3(90f, 0f, 0f));
         }
@@ -227,14 +234,20 @@ public class MapGenerator : MonoBehaviour
 
         //creating the map mesh
         CreateMesh(segmentTreeRoot);
+        minimapPlayerInstance = Instantiate(playerMiniMapMarker, virusPlayer.transform.position, quaternion.identity);
+        minimapPlayerInstance.transform.localScale = radiusScalar * playerMiniMapMarker.transform.localScale;
+        minimapPlayerInstance.transform.SetParent(mapParent.transform);
+
+        //scalaing down the map
         mapParent.transform.localScale = new Vector3(minimapScale, minimapScale, minimapScale); 
         
 
         Debug.Log("---Program Complete---");
         buildingBlock.SetActive(false);
         keyPointMarker.SetActive(false);
-        bloodBrainBarrierDivider.SetActive(false);
+        if(bloodBrainBarrierDivider != null) bloodBrainBarrierDivider.SetActive(false);
         spawnerObject.SetActive(false);
+        playerMiniMapMarker.SetActive(false);
 
     }
 
@@ -264,6 +277,10 @@ public class MapGenerator : MonoBehaviour
                 } 
             }
         }
+
+        //updating the player's location in the minimap
+        Debug.Log("this is running");
+        minimapPlayerInstance.transform.localPosition = virusPlayer.transform.position;
     }
 
 
