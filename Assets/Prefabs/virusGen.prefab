@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2453124389984728338
 Transform:
   m_ObjectHideFlags: 0
@@ -131,6 +131,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73fdd1a43a335e74d9f6dca550d1ece1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VirusGenController
+  isRespawnPoint: 0
+  id: 0
+  respawnDecay: 0
+  respawnDecayChance: 1000
 --- !u!1 &8846088346568238047
 GameObject:
   m_ObjectHideFlags: 0
