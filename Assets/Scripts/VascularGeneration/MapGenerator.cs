@@ -4,12 +4,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 using VascularGenerator.DataStructures;
 using Unity.Mathematics;
+using System.Collections;
 
 public class MapGenerator : MonoBehaviour
 {
     public List<string> respawnCellTypes;
     public GameObject keyPointMarker;
     public bool markKeySegments;
+    public bool markKeyNodes;
     public Material keyMaterial;
     public GameObject buildingBlock;
     public Material buildingBlockMaterial;
@@ -44,6 +46,11 @@ public class MapGenerator : MonoBehaviour
     public Dictionary<int, GameObject> idToMiniMapDict = new(); //given a virusGenController Id, it returns the game object in the minimap that is associated with that spawn point
  
 
+    public bool flyInSegments;
+    public float flyInHeight;
+    public float flyInSpeed;
+    public float interFlyInTime;
+
     int perfusionRadius = 400;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -73,7 +80,7 @@ public class MapGenerator : MonoBehaviour
         );
         
         buildingBlock.SetActive(true);
-        keyPointMarker.SetActive(false);
+        keyPointMarker.SetActive(true);
         if (bloodBrainBarrierDivider != null) bloodBrainBarrierDivider.SetActive(true);
         spawnerObject.SetActive(true);
         playerMiniMapMarker.SetActive(true);
@@ -117,8 +124,11 @@ public class MapGenerator : MonoBehaviour
 
                     Vector3 startPoint = new Vector3((float)node.GetValue().startPoint[0], 0, (float)node.GetValue().startPoint[1]);
                     Vector3 endPoint = new Vector3((float)node.GetValue().endPoint[0], 0, (float)node.GetValue().endPoint[1]);
-                    GameObject marker = Instantiate(keyPointMarker, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
-                    marker.transform.localScale = new Vector3(5,5,5);
+                    if (markKeyNodes){
+                        GameObject marker = Instantiate(keyPointMarker, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
+                        marker.transform.localScale = new Vector3(5,5,5);
+                    }
+                    
                 }
 
                 //marking any nodes within the influenceRadius (defined by keyNodeExclusionRadius) of each key node with said node's tag
@@ -187,41 +197,43 @@ public class MapGenerator : MonoBehaviour
             foreach (Tree<VascularSegment> c in current.GetChildren()){queue.Add(c);}
         }
 
-        if(bloodBrainBarrierDivider != null)
-        {
-            //now we have a brain Node locaiton (brainSegment) and a list of key nodes (spawnPointNodes)
-            CatmullRomSpline brainSegmentSpline = curveDict[brainSegment.GetValue().curveID];
-            Vector3 brainBarrierInstancePoint = brainSegmentSpline.Eval(0.5f);
-            GameObject brainBarrier = Instantiate(bloodBrainBarrierDivider, brainBarrierInstancePoint, quaternion.identity);
-            brainBarrier.transform.localScale = brainBarrier.transform.localScale * (float)brainSegment.GetValue().radius * 45f*3f; // new Vector3((float)brainSegment.GetValue().radius, 1f, (float)brainSegment.GetValue().radius);
-            brainBarrier.transform.LookAt(brainSegmentSpline.Eval(1f) - brainBarrierInstancePoint);
-            brainBarrier.transform.Rotate(new Vector3(90f, 0f, 0f));
-        }
+        if (loadFullGraph){
+            if(bloodBrainBarrierDivider != null)
+            {
+                //now we have a brain Node locaiton (brainSegment) and a list of key nodes (spawnPointNodes)
+                CatmullRomSpline brainSegmentSpline = curveDict[brainSegment.GetValue().curveID];
+                Vector3 brainBarrierInstancePoint = brainSegmentSpline.Eval(0.5f);
+                GameObject brainBarrier = Instantiate(bloodBrainBarrierDivider, brainBarrierInstancePoint, quaternion.identity);
+                brainBarrier.transform.localScale = brainBarrier.transform.localScale * (float)brainSegment.GetValue().radius * 45f*3f; // new Vector3((float)brainSegment.GetValue().radius, 1f, (float)brainSegment.GetValue().radius);
+                brainBarrier.transform.LookAt(brainSegmentSpline.Eval(1f) - brainBarrierInstancePoint);
+                brainBarrier.transform.Rotate(new Vector3(90f, 0f, 0f));
+            }
 
 
-        //now we will create spawner objects and keep track of them in a list, all from the list of spawnerNodes
-        int id = 0;
-        foreach (Tree<VascularSegment> spawnNode in spawnPointNodes)
-        {
-            //creating the actual spawner objects and keeping track of the scripts attached
-            CatmullRomSpline spawnerSpline = curveDict[spawnNode.GetValue().curveID];
-            Vector3 spawnerInstancePoint = spawnerSpline.Eval(0.5f);
-            GameObject spawnPoint = Instantiate(spawnerObject, spawnerInstancePoint, Quaternion.identity);
-            spawnedObjects.Add(spawnPoint);
-            VirusGenController virusGen = spawnPoint.GetComponent<VirusGenController>();
-            spawnedObjectsControllers.Add(virusGen);
-            virusGen.id = id;
-            id++;
+            //now we will create spawner objects and keep track of them in a list, all from the list of spawnerNodes
+            int id = 0;
+            foreach (Tree<VascularSegment> spawnNode in spawnPointNodes)
+            {
+                //creating the actual spawner objects and keeping track of the scripts attached
+                CatmullRomSpline spawnerSpline = curveDict[spawnNode.GetValue().curveID];
+                Vector3 spawnerInstancePoint = spawnerSpline.Eval(0.5f);
+                GameObject spawnPoint = Instantiate(spawnerObject, spawnerInstancePoint, Quaternion.identity);
+                spawnedObjects.Add(spawnPoint);
+                VirusGenController virusGen = spawnPoint.GetComponent<VirusGenController>();
+                spawnedObjectsControllers.Add(virusGen);
+                virusGen.id = id;
+                id++;
 
-            //creating the minimap objects
-            Vector3 startPoint = new Vector3((float)spawnNode.GetValue().startPoint[0], 0, (float)spawnNode.GetValue().startPoint[1]);
-            Vector3 endPoint = new Vector3((float)spawnNode.GetValue().endPoint[0], 0, (float)spawnNode.GetValue().endPoint[1]);
-            GameObject infectedMarker = Instantiate(infectedPointMapMarker, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
-            float scalar = 4*(float)spawnNode.GetValue().radius*radiusScalar; //controls the size of the minimap virus
-            infectedMarker.transform.localScale = new Vector3(scalar, scalar, scalar);
-            idToMiniMapDict[virusGen.id] = infectedMarker; //saving the infected minimap marker object in the id to object dictionary
-            infectedMarker.transform.SetParent(mapParent.transform);
-            
+                //creating the minimap objects
+                Vector3 startPoint = new Vector3((float)spawnNode.GetValue().startPoint[0], 0, (float)spawnNode.GetValue().startPoint[1]);
+                Vector3 endPoint = new Vector3((float)spawnNode.GetValue().endPoint[0], 0, (float)spawnNode.GetValue().endPoint[1]);
+                GameObject infectedMarker = Instantiate(infectedPointMapMarker, startPoint+(endPoint-startPoint)/2, Quaternion.identity);
+                float scalar = 4*(float)spawnNode.GetValue().radius*radiusScalar; //controls the size of the minimap virus
+                infectedMarker.transform.localScale = new Vector3(scalar, scalar, scalar);
+                idToMiniMapDict[virusGen.id] = infectedMarker; //saving the infected minimap marker object in the id to object dictionary
+                infectedMarker.transform.SetParent(mapParent.transform);
+                
+            }
         }
 
         if (respawnManager!= null)
@@ -234,13 +246,18 @@ public class MapGenerator : MonoBehaviour
 
         //creating the map mesh
         CreateMesh(segmentTreeRoot);
-        minimapPlayerInstance = Instantiate(playerMiniMapMarker, virusPlayer.transform.position, quaternion.identity);
-        minimapPlayerInstance.transform.localScale = radiusScalar * playerMiniMapMarker.transform.localScale;
-        minimapPlayerInstance.transform.SetParent(mapParent.transform);
+        if (virusPlayer !=null){
+            minimapPlayerInstance = Instantiate(playerMiniMapMarker, virusPlayer.transform.position, quaternion.identity);
+            minimapPlayerInstance.transform.localScale = radiusScalar * playerMiniMapMarker.transform.localScale;
+            minimapPlayerInstance.transform.SetParent(mapParent.transform);
+        }
 
         //scalaing down the map
         mapParent.transform.localScale = new Vector3(minimapScale, minimapScale, minimapScale); 
-        
+        if (flyInSegments)
+        {    
+        StartCoroutine(FlyInSegments(segmentTreeRoot));
+        }
 
         Debug.Log("---Program Complete---");
         buildingBlock.SetActive(false);
@@ -279,8 +296,10 @@ public class MapGenerator : MonoBehaviour
         }
 
         //updating the player's location in the minimap
-        Debug.Log("this is running");
-        minimapPlayerInstance.transform.localPosition = virusPlayer.transform.position;
+        if (virusPlayer != null){
+            minimapPlayerInstance.transform.localPosition = virusPlayer.transform.position;
+        }
+
     }
 
 
@@ -305,6 +324,7 @@ public class MapGenerator : MonoBehaviour
             segment.transform.localScale = new Vector3((float)currentSegment.GetValue().radius*radiusScalar, distance/2, (float)currentSegment.GetValue().radius*radiusScalar);
             segment.transform.rotation = Quaternion.FromToRotation(Vector3.up, (endPoint-startPoint).normalized);
             segment.transform.parent = mapParent.transform;
+            currentSegment.GetValue().segmentObject = segment;
             if (buildingBlockMaterial != null)
             {
                 segment.GetComponent<Renderer>().material = buildingBlockMaterial;
@@ -314,6 +334,11 @@ public class MapGenerator : MonoBehaviour
             if (currentSegment.tag!="" && markKeySegments)
             {
                 segment.GetComponent<Renderer>().material = keyMaterial;
+            }
+
+            if (flyInSegments)
+            {
+                segment.SetActive(false);
             }
 
             //adding the children to the queue
@@ -397,5 +422,47 @@ public class MapGenerator : MonoBehaviour
         }
         return null;//if no list has been returned after the loop runs, it's not possible at the current radius constraint, so we return null
 
+    }
+
+
+    public IEnumerator FlyInSegments(Tree<VascularSegment> tree)
+    {
+        List<Tree<VascularSegment>> toVisit = new(){tree};
+
+        while (toVisit.Count > 0)
+        {
+            //getting the current segment
+            Tree<VascularSegment> currentSegment = toVisit[0];
+            toVisit.RemoveAt(0);
+
+            GameObject obj = currentSegment.GetValue().segmentObject;
+            obj.SetActive(true);
+            
+            StartCoroutine(FlyInSegment(obj, obj.transform.position + new Vector3(0f,flyInHeight, 0f), obj.transform.position));
+            yield return new WaitForSeconds(interFlyInTime);
+            //adding the children to the queue
+            if(currentSegment.GetChildren().Count==0){continue;}
+            foreach (Tree<VascularSegment> c in currentSegment.GetChildren()){toVisit.Add(c);}
+        }
+    }
+    private IEnumerator FlyInSegment(GameObject segment, Vector3 startPos, Vector3 endPos)
+    {
+
+        float distance = Vector3.Distance(startPos, endPos);
+        float duration = distance / flyInSpeed;
+        float elapsed = 0f;
+
+        segment.transform.position = startPos;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            segment.transform.position = Vector3.Lerp(startPos, endPos, t);
+            yield return null;
+        }
+
+        // Ensure object is exactly at end position at the end
+        segment.transform.position = endPos;
     }
 }

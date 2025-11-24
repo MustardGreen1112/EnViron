@@ -3429,7 +3429,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!135 &210693849
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -12129,7 +12129,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 10000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -12156,8 +12156,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 961739749}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.4745436, y: 0.03244402, z: -0.01740886, w: 0.8794616}
+  m_LocalPosition: {x: -85.413, y: 648.09344, z: -485.97058}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19445,6 +19445,7 @@ MonoBehaviour:
   - kidney
   keyPointMarker: {fileID: 450667968}
   markKeySegments: 1
+  markKeyNodes: 0
   keyMaterial: {fileID: 2100000, guid: c9f15949f062b7645ae42a9a5f877eaf, type: 2}
   buildingBlock: {fileID: 162737460}
   buildingBlockMaterial: {fileID: 2100000, guid: 0ebf26bf0d617d44caf9c2b6bffcca4d, type: 2}
@@ -19452,16 +19453,22 @@ MonoBehaviour:
   spawnerObject: {fileID: 7998593950406560059, guid: 3246754291186b44099acfbff51cee09, type: 3}
   infectedPointMapMarker: {fileID: 450667968}
   bloodBrainBarrierDivider: {fileID: 162737460}
-  minimapScale: 0.005
+  virusPlayer: {fileID: 0}
+  playerMiniMapMarker: {fileID: 450667968}
+  minimapScale: 1
   radiusScalar: 20
   useVolumeOptimization: 0
   LoadFromDummyGraph: 0
   loadJSON_name: dummyGraphTagged
   storeGraphGenerated: 0
   OVERWRITE_JSONStorageName: dummyGraphTagged
-  loadFullGraph: 1
+  loadFullGraph: 0
   graphWithCurveIDName: dummyGraph2_withCurveID
   curveIDDictionaryName: dummyGraph2_curves
+  flyInSegments: 1
+  flyInHeight: 500
+  flyInSpeed: 750
+  interFlyInTime: 0.03
 --- !u!1 &1689184726
 GameObject:
   m_ObjectHideFlags: 0
@@ -23654,6 +23661,10 @@ PrefabInstance:
     - target: {fileID: 9000245734411627503, guid: a82c9fccf044e3447822b0fe340c035b, type: 3}
       propertyPath: m_Name
       value: bloodBrainBarrier
+      objectReference: {fileID: 0}
+    - target: {fileID: 9000245734411627503, guid: a82c9fccf044e3447822b0fe340c035b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9073293732872656518, guid: a82c9fccf044e3447822b0fe340c035b, type: 3}
       propertyPath: m_LocalPosition.x

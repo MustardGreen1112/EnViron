@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using UnityEngine;
 namespace VascularGenerator.DataStructures
 {
     public class VascularSegment : IsCopyable<VascularSegment>
@@ -12,7 +13,7 @@ namespace VascularGenerator.DataStructures
         [JsonProperty] public double flow { get; set; }
         [JsonProperty] public double pressureIn { get; set; }
         [JsonProperty] public double pressureOut { get; set; }
-        
+        [JsonIgnore] public GameObject segmentObject;
 
         private double dynamicViscosity = 0.0035;
 
